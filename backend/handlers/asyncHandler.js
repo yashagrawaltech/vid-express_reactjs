@@ -1,4 +1,4 @@
-import { devlog } from '../index.js';
+import { devlog } from '../api/index.js';
 
 export const asyncHandler = (reqHandler) => {
     return async (req, res, next) => {
