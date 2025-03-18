@@ -43,7 +43,7 @@ if (
 } else {
     app.use(
         cors({
-            origin: 'https://vid-express-reactjs.vercel.app/',
+            origin: 'https://vid-express-reactjs.vercel.app',
             credentials: true,
         })
     );
