@@ -29,12 +29,25 @@ connectToMongoDB(`${process.env.MONGODB_URI}/${process.env.DB_NAME}`);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(
-    cors({
-        origin: 'http://localhost:5173',
-        credentials: true,
-    })
-);
+
+if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'testing'
+) {
+    app.use(
+        cors({
+            origin: '*',
+            credentials: true,
+        })
+    );
+} else {
+    app.use(
+        cors({
+            origin: 'https://vid-express-reactjs.vercel.app/',
+            credentials: true,
+        })
+    );
+}
 
 // Routes
 app.use('/api/healthcheck', healthcheckRoutes);
@@ -44,7 +57,10 @@ app.use('/api/video', videoRoutes);
 // Error Handler
 app.use(errorHandler);
 
-if (process.env.NODE_ENV === 'development') {
+if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'testing'
+) {
     app.listen(PORT, () => {
         devlog(`Server is listening on port: ${PORT}`);
     });
