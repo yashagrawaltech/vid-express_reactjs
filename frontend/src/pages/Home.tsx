@@ -29,7 +29,7 @@ const Home = () => {
         );
 
     return (
-        <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 p-4">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 p-4">
             {loading ? (
                 <>
                     {[...Array(30)].map((_, idx) => {
@@ -46,9 +46,7 @@ const Home = () => {
                         );
                     })}
                 </>
-            ) : null}
-
-            {!loading && videoArr && videoArr.length ? (
+            ) : videoArr && videoArr.length ? (
                 videoArr.map((v) => {
                     return (
                         <VideoCard
