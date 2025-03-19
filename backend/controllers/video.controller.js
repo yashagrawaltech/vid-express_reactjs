@@ -22,7 +22,7 @@ export const uploadVideo = asyncHandler(async (req, res, next) => {
     const { title, description } = req.body;
     const { video, thumbnail } = req.files;
 
-    const videoResponse = await uploadOnCloudinary(video[0].path);
+    const videoResponse = await uploadOnCloudinary(video[0]);
     if (!videoResponse || videoResponse === null) {
         return next(
             new ApiError(
@@ -32,7 +32,7 @@ export const uploadVideo = asyncHandler(async (req, res, next) => {
         );
     }
 
-    const thumbnailResponse = await uploadOnCloudinary(thumbnail[0].path);
+    const thumbnailResponse = await uploadOnCloudinary(thumbnail[0]);
     if (!thumbnailResponse || thumbnailResponse === null) {
         return next(
             new ApiError(
