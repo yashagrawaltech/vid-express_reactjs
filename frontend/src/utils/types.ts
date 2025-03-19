@@ -17,3 +17,22 @@ export interface VideoResponse {
     };
     message: string;
 }
+
+export interface User {
+    _id: string;
+    fullName: string;
+    createdAt: Date;
+    username: string;
+    email: string;
+    loading: boolean;
+    error: string;
+}
+
+export interface UserResponse {
+    statusCode: number;
+    success: boolean;
+    data: {
+        user: User;
+    };
+    message: string;
+}

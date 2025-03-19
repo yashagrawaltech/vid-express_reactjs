@@ -22,7 +22,7 @@ const useFetch = <T = unknown,>(url: string): FetchState<T> => {
             setError(null);
 
             try {
-                const response = await axios.get<T>(url);
+                const response = await axios.get<T>(url, {withCredentials: true});
                 setData(response.data);
             } catch (err) {
                 if (axios.isAxiosError(err)) {
