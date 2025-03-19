@@ -6,6 +6,7 @@ import {
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Signin from './pages/Signin';
+import Signup from './pages/Signup';
 
 const routes: RouteObject[] = [
     {
@@ -16,6 +17,10 @@ const routes: RouteObject[] = [
     {
         path: '/sign-in',
         element: <Signin />,
+    },
+    {
+        path: '/sign-up',
+        element: <Signup />,
     },
 ];
 

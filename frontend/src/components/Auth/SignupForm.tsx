@@ -3,19 +3,32 @@ import Error from '../Error';
 import { z } from 'zod';
 import axios from 'axios';
 
-const DataSchema = z.object({
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters long'),
-});
+const DataSchema = z
+    .object({
+        email: z.string().email('Invalid email address'),
+        fullName: z
+            .string()
+            .min(4, 'Fullname must be at least 4 characters long'),
+        password: z
+            .string()
+            .min(8, 'Password must be at least 8 characters long'),
+        confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ['confirmPassword'],
+    });
 
 type ErrorResponse = {
     message: string;
 };
 
-const SigninForm = () => {
+const SignupForm = () => {
     const [formData, setFormData] = useState({
         email: '',
+        fullName: '',
         password: '',
+        confirmPassword: '',
     });
 
     const [error, setError] = useState<ErrorResponse | null>(null);
@@ -46,7 +59,7 @@ const SigninForm = () => {
 
         try {
             await axios.post(
-                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/signin`,
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/signup`,
                 formData,
                 { withCredentials: true }
             );
@@ -84,6 +97,16 @@ const SigninForm = () => {
                     name="email"
                 />
 
+                <label className="fieldset-label">Full Name</label>
+                <input
+                    type="text"
+                    className="input"
+                    placeholder="Your Name"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    name="fullName"
+                />
+
                 <label className="fieldset-label">Password</label>
                 <input
                     type="password"
@@ -94,12 +117,22 @@ const SigninForm = () => {
                     name="password"
                 />
 
+                <label className="fieldset-label">Confirm Password</label>
+                <input
+                    type="password"
+                    className="input"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    name="confirmPassword"
+                />
+
                 <button className="btn btn-neutral mt-4">
-                    {loading ? 'loading' : 'Signin'}
+                    {loading ? 'loading' : 'Signup'}
                 </button>
             </fieldset>
         </form>
     );
 };
 
-export default SigninForm;
+export default SignupForm;
