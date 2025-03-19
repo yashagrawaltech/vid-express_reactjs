@@ -12,7 +12,7 @@ const Home = () => {
         error,
         loading,
     } = useFetch<VideoResponse>(
-        `${import.meta.env.VITE_FRONTEND_DOMAIN}/api/video`
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video`
     );
 
     useLayoutEffect(() => {
