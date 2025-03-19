@@ -27,7 +27,12 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
     return res
         .status(statusCodes.CREATED)
-        .cookie('authToken', token)
+        .cookie('authToken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 3600000,
+        })
         .json(
             new ApiResponse(
                 statusCodes.CREATED,
@@ -57,7 +62,12 @@ export const loginUser = asyncHandler(async (req, res, next) => {
     const { user, token } = await checkIsUserValidForLogin({ email, password });
     return res
         .status(statusCodes.OK)
-        .cookie('authToken', token)
+        .cookie('authToken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 3600000,
+        })
         .json(
             new ApiResponse(statusCodes.OK, 'user loggedin successfully', {
                 user,
