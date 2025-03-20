@@ -7,12 +7,24 @@ import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
+import Profile from './pages/Profile';
+import { ProtectedRouteProvider } from './components/ProtectedRouteProvider';
 
 const routes: RouteObject[] = [
     {
         path: '/',
         element: <MainLayout />,
-        children: [{ path: '', element: <Home /> }],
+        children: [
+            { path: '', element: <Home /> },
+            {
+                path: 'profile',
+                element: (
+                    <ProtectedRouteProvider>
+                        <Profile />
+                    </ProtectedRouteProvider>
+                ),
+            },
+        ],
     },
     {
         path: '/sign-in',

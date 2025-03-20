@@ -30,7 +30,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
         .cookie('authToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none',
+            sameSite: process.env.NODE_ENV === 'prodcution' ? 'none' : null,
             maxAge: 3600000,
         })
         .json(
@@ -65,7 +65,7 @@ export const loginUser = asyncHandler(async (req, res, next) => {
         .cookie('authToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none',
+            sameSite: process.env.NODE_ENV === 'prodcution' ? 'none' : null,
             maxAge: 3600000,
         })
         .json(
