@@ -10,7 +10,6 @@ const Signup = () => {
     useLayoutEffect(() => {
         if (!loading && _id) {
             navigate('/');
-            window.location.reload();
         }
     }, [_id, navigate, loading]);
 

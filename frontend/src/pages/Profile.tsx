@@ -60,6 +60,7 @@ const Profile = () => {
         e.preventDefault();
         if (state === 'disabled') return;
 
+        setLoading(true);
         const result = DataSchema.safeParse(formData);
         if (!result.success) {
             setLoading(false);

@@ -25,19 +25,19 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     useEffect(() => {
         if (userData) {
             const data = userData.data.user;
-            setUser({ ...data });
+            setUser({ ...data, loading: false, error: '' });
         }
     }, [userData]);
 
     useEffect(() => {
         if (fetchError) {
-            setUser((p) => ({ ...p, error: fetchError }));
+            setUser((p) => ({ ...p, error: fetchError, loading: false }));
         }
     }, [fetchError]);
 
     useEffect(() => {
         if (fetchLoading) {
-            setUser((p) => ({ ...p, loading: fetchLoading }));
+            setUser((p) => ({ ...p, loading: fetchLoading, error: '' }));
         }
     }, [fetchLoading]);
 
