@@ -76,6 +76,50 @@ export const loginUser = asyncHandler(async (req, res, next) => {
         );
 });
 
+export const editUserProfile = asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new ApiError(
+                statusCodes.CONFLICT,
+                `${errors.array()[0].msg}`,
+                errors.array()
+            )
+        );
+    }
+
+    const { username: usernameQuery, fullName: fullNamequery } = req.query;
+
+    if (!usernameQuery && !fullNamequery) {
+        return next(
+            new ApiError(
+                statusCodes.CONFLICT,
+                `query parameters are required for profile update`
+            )
+        );
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (usernameQuery) {
+        const { username } = req.body;
+        user.username = username;
+        await user.save();
+    }
+
+    if (fullNamequery) {
+        const { fullName } = req.body;
+        user.fullName = fullName;
+        await user.save();
+    }
+
+    return res.json(
+        new ApiResponse(statusCodes.OK, 'profile updated successfuly', {
+            user,
+        })
+    );
+});
+
 export const logoutUser = asyncHandler(async (req, res, next) => {
     return res
         .clearCookie('authToken')

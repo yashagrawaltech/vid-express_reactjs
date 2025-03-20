@@ -7,11 +7,13 @@ import {
     getUserProfile,
     getUserProfileByUserId,
     clearWatchHistory,
+    editUserProfile,
 } from '../controllers/user.controller.js';
 import {
     userSignInValidator,
     userSignUpValidator,
     userPasswordValidator,
+    editProfileValidator,
 } from '../validators/user.validator.js';
 import { protectedRoute } from '../middlewares/user.middleware.js';
 
@@ -27,6 +29,12 @@ router.post(
     changeUserPassword
 );
 router.post('/clear-watch-history', protectedRoute, clearWatchHistory);
+router.post(
+    '/edit-profile',
+    protectedRoute,
+    editProfileValidator,
+    editUserProfile
+);
 
 router.get('/', protectedRoute, getUserProfile);
 router.get('/:id', getUserProfileByUserId);

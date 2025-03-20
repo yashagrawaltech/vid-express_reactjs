@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 
 export const userSignUpValidator = [
     body('email', 'Email does not Empty').not().isEmpty(),
@@ -24,4 +24,17 @@ export const userPasswordValidator = [
     body('password', 'The minimum password length is 6 characters').isLength({
         min: 6,
     }),
+];
+
+export const editProfileValidator = [
+    query('fullName').equals('true'),
+    body('fullName')
+        .if(query('fullName').equals('true'))
+        .notEmpty()
+        .withMessage('Full Name is required'),
+    query('username').equals('true'),
+    body('username')
+        .if(query('username').equals('true'))
+        .notEmpty()
+        .withMessage('Username is required'),
 ];
