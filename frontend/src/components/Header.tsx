@@ -9,8 +9,8 @@ const Header = ({
     const { username, fullName } = useUser();
 
     return (
-        <div className="flex md:px-2">
-            <div className="navbar bg-base-100 shadow-sm">
+        <div className="flex">
+            <div className="navbar bg-base-100 shadow-sm md:px-2">
                 <div className="navbar-start w-fit lg:w-full mr-2">
                     <div
                         role="button"
