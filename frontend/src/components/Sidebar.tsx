@@ -69,47 +69,49 @@ const Sidebar = () => {
                 Studio
             </NavLink>
 
-            {!username ? (
-                <>
-                    <NavLink
-                        className={({ isActive }) =>
-                            `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
-                        }
-                        to={'/sign-in'}
-                    >
-                        Signin
-                    </NavLink>
-                    <NavLink
-                        className={({ isActive }) =>
-                            `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
-                        }
-                        to={'/sign-up'}
-                    >
-                        Signup
-                    </NavLink>
-                </>
-            ) : (
-                <>
-                    <NavLink
-                        className={({ isActive }) =>
-                            `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
-                        }
-                        to={'/profile'}
-                    >
-                        Profile
-                    </NavLink>
-
-                    <span className="mt-auto block w-full">
-                        {error ? <p>{error}</p> : null}
-                        <button
-                            className={'btn btn-soft btn-error w-full'}
-                            onClick={handleLogout}
+            <div className="mt-auto flex flex-col gap-4">
+                {!username ? (
+                    <>
+                        <NavLink
+                            className={({ isActive }) =>
+                                `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
+                            }
+                            to={'/sign-in'}
                         >
-                            {loading ? 'loading' : 'Logout'}
-                        </button>
-                    </span>
-                </>
-            )}
+                            Signin
+                        </NavLink>
+                        <NavLink
+                            className={({ isActive }) =>
+                                `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
+                            }
+                            to={'/sign-up'}
+                        >
+                            Signup
+                        </NavLink>
+                    </>
+                ) : (
+                    <>
+                        <NavLink
+                            className={({ isActive }) =>
+                                `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
+                            }
+                            to={'/profile'}
+                        >
+                            Profile
+                        </NavLink>
+
+                        <span className="block w-full">
+                            {error ? <p>{error}</p> : null}
+                            <button
+                                className={'btn btn-soft btn-error w-full'}
+                                onClick={handleLogout}
+                            >
+                                {loading ? 'loading' : 'Logout'}
+                            </button>
+                        </span>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

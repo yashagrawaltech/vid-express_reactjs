@@ -122,7 +122,11 @@ export const editUserProfile = asyncHandler(async (req, res, next) => {
 
 export const logoutUser = asyncHandler(async (req, res, next) => {
     return res
-        .clearCookie('authToken')
+        .clearCookie('authToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : null,
+        })
         .status(statusCodes.OK)
         .json(new ApiResponse(statusCodes.OK, 'user loggedout successfully'));
 });
