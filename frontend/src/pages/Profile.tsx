@@ -109,7 +109,7 @@ const Profile = () => {
     return (
         <div className="w-full p-4 flex flex-col gap-4">
             <div className="avatar avatar-placeholder w-full flex justify-center">
-                <div className="bg-neutral text-neutral-content w-24 rounded-full">
+                <div className="bg-primary text-neutral-content w-24 rounded-full">
                     <span className="text-3xl">
                         {formData.fullName.toString()[0]}
                     </span>
