@@ -35,7 +35,7 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="p-4 flex flex-col gap-4 h-full">
+        <div className="p-4 flex flex-col gap-4 h-full bg-base-100">
             <NavLink
                 to={'/'}
                 className={({ isActive }) =>
