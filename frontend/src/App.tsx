@@ -9,6 +9,7 @@ import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import { ProtectedRouteProvider } from './components/ProtectedRouteProvider';
+import Post from './pages/Post';
 
 const routes: RouteObject[] = [
     {
@@ -21,6 +22,14 @@ const routes: RouteObject[] = [
                 element: (
                     <ProtectedRouteProvider>
                         <Profile />
+                    </ProtectedRouteProvider>
+                ),
+            },
+            {
+                path: 'post',
+                element: (
+                    <ProtectedRouteProvider>
+                        <Post />
                     </ProtectedRouteProvider>
                 ),
             },

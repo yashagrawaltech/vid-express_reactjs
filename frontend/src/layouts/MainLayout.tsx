@@ -8,7 +8,7 @@ const MainLayout = () => {
     const [showSideBar, setShowSideBar] = useState(false);
 
     const asideClasses = clsx(
-        'w-[80dvw] absolute left-0 top-0 md:static md:w-full z-20 h-full overflow-y-auto shadow-[8px_0_16px_rgba(0,0,0,0.1)] border-base-200 border-r',
+        'w-[80dvw] absolute left-0 top-0 md:static md:w-full z-20 h-full overflow-y-auto shadow-sm border-base-200 border-r',
         {
             block: showSideBar,
             hidden: !showSideBar,
