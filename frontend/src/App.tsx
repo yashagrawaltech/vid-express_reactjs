@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import { ProtectedRouteProvider } from './components/ProtectedRouteProvider';
 import Post from './pages/Post';
+import VideoPage from './pages/Video';
 
 const routes: RouteObject[] = [
     {
@@ -32,6 +33,10 @@ const routes: RouteObject[] = [
                         <Post />
                     </ProtectedRouteProvider>
                 ),
+            },
+            {
+                path: 'video/:id',
+                element: <VideoPage />,
             },
         ],
     },

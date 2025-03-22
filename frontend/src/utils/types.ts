@@ -6,7 +6,9 @@ export interface Video {
     thumbnail: string;
     _id: string;
     views: number;
+    url: string;
     title: string;
+    description: string;
 }
 
 export interface VideoResponse {
@@ -14,6 +16,15 @@ export interface VideoResponse {
     success: boolean;
     data: {
         videos: Video[];
+    };
+    message: string;
+}
+
+export interface SignleVideoResponse {
+    statusCode: number;
+    success: boolean;
+    data: {
+        video: Video;
     };
     message: string;
 }

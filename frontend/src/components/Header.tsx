@@ -86,23 +86,23 @@ const Header = ({
                         </svg>
                     </button>
 
-                    <Link to={"/post"}>
-                    <button className="btn btn-ghost btn-circle ml-2">
-                        <svg
-                            className="w-6 h-6 text-neutral-content"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round" // Use camelCase for SVG properties
-                                strokeWidth="2"
-                                d="M12 4v16m8-8H4"
-                            />
-                        </svg>
-                    </button>
+                    <Link to={'/post'}>
+                        <button className="btn btn-ghost btn-circle ml-2">
+                            <svg
+                                className="w-6 h-6 text-neutral-content"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round" // Use camelCase for SVG properties
+                                    strokeWidth="2"
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                        </button>
                     </Link>
 
                     <div className="buttons md:flex gap-4 justify-end ml-4 hidden">

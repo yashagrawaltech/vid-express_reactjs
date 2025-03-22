@@ -46,11 +46,11 @@ const Post = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, files } = e.target;
-        console.log("File input change:", name, files); // Debugging line
-    
+        console.log('File input change:', name, files); // Debugging line
+
         if (name === 'video' || name === 'thumbnail') {
             if (files && files.length > 0) {
-                console.log("Selected file:", files[0]); // Debugging line
+                console.log('Selected file:', files[0]); // Debugging line
                 setFormData((prev) => ({
                     ...prev,
                     [name]: files[0],
@@ -62,19 +62,19 @@ const Post = () => {
                 [name]: value,
             }));
         }
-    
+
         if (error) {
             setError(null);
         }
     };
 
-    console.log(formData)
+    console.log(formData);
 
     const handleSubmit = async (
         e: React.FormEvent<HTMLFormElement | HTMLButtonElement>
     ) => {
         e.preventDefault();
-    
+
         setLoading(true);
         setSuccess('');
         const result = DataSchema.safeParse(formData);
@@ -86,7 +86,7 @@ const Post = () => {
             setError(fieldErrors[0]);
             return;
         }
-    
+
         try {
             // Create a new FormData instance
             const formDataToSend = new FormData();
@@ -94,15 +94,15 @@ const Post = () => {
             formDataToSend.append('title', formData.title);
             formDataToSend.append('description', formData.description);
             formDataToSend.append('thumbnail', formData.thumbnail as File);
-    
+
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/post`,
                 formDataToSend,
                 { withCredentials: true }
             );
-    
+
             if (response.data.success) {
-                setSuccess("Video uploaded successfully");
+                setSuccess('Video uploaded successfully');
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -119,7 +119,9 @@ const Post = () => {
 
     return (
         <div className="w-full p-4">
-            <h1 className='text-2xl md:text-6xl font-bold mb-4'>Post New Video</h1>
+            <h1 className="text-2xl md:text-6xl font-bold mb-4">
+                Post New Video
+            </h1>
             <form className="flex flex-col" onSubmit={handleSubmit}>
                 {error && (
                     <Error
@@ -143,7 +145,7 @@ const Post = () => {
                     <legend className="fieldset-legend">Title</legend>
                     <input
                         type="text"
-                        placeholder={"Video Title"}
+                        placeholder={'Video Title'}
                         value={formData.title}
                         className="input w-full"
                         onChange={handleChange}
@@ -157,7 +159,7 @@ const Post = () => {
                     <legend className="fieldset-legend">Description</legend>
                     <input
                         type="text"
-                        placeholder={"Video Description"}
+                        placeholder={'Video Description'}
                         value={formData.description}
                         className="input w-full"
                         onChange={handleChange}
