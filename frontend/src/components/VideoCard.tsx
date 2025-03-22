@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '../utils/cn';
 import { timeAgo } from '../utils/time-ago';
 import { Video } from '../utils/types';
@@ -10,34 +10,27 @@ interface Props {
     videoDetails: Video;
 }
 
-const VideoCard = ({ className, videoDetails }: Props) => {
-    const defaultClass =
-        'card bg-base-100 w-96 shadow-sm border border-base-100';
-    const timeAgoValue = timeAgo(videoDetails.createdAt);
+// Custom hook for image loading and compression
+const useCompressedImage = (thumbnail: string) => {
     const [compressedImage, setCompressedImage] = useState<string | null>(null);
-    const imgRef = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const loadImage = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(videoDetails.thumbnail);
+                const response = await fetch(thumbnail);
                 const blob = await response.blob();
-
-                // Create a File from the Blob
                 const file = new File([blob], 'thumbnail.jpg', {
                     type: blob.type,
                 });
 
-                // Compress the image
                 const compressedBlob = await imageCompression(file, {
-                    maxSizeMB: 1, // Maximum size in MB
-                    maxWidthOrHeight: 800, // Maximum width or height
-                    useWebWorker: true, // Use web worker for better performance
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 800,
+                    useWebWorker: true,
                 });
 
-                // Create a URL for the compressed image
                 const compressedUrl = URL.createObjectURL(compressedBlob);
                 setCompressedImage(compressedUrl);
             } catch (error) {
@@ -48,7 +41,18 @@ const VideoCard = ({ className, videoDetails }: Props) => {
         };
 
         loadImage();
-    }, [videoDetails.thumbnail]);
+    }, [thumbnail]);
+
+    return { compressedImage, isLoading };
+};
+
+const VideoCard = ({ className, videoDetails }: Props) => {
+    const defaultClass =
+        'card bg-base-100 w-96 shadow-sm border border-base-100';
+    const timeAgoValue = timeAgo(videoDetails.createdAt);
+    const { compressedImage, isLoading } = useCompressedImage(
+        videoDetails.thumbnail
+    );
 
     return (
         <>
@@ -56,7 +60,6 @@ const VideoCard = ({ className, videoDetails }: Props) => {
                 <div className={cn(defaultClass, className)}>
                     <figure className="aspect-video">
                         <div
-                            ref={imgRef}
                             className="h-full w-full object-center object-cover"
                             style={{
                                 backgroundImage: compressedImage
@@ -87,41 +90,9 @@ const VideoCard = ({ className, videoDetails }: Props) => {
 export const VideoCardSide = ({ className, videoDetails }: Props) => {
     const defaultClass =
         'flex justify-start items-start gap-4 rounded-sm overflow-hidden border border-base-200';
-    const [compressedImage, setCompressedImage] = useState<string | null>(null);
-    const imgRef = useRef<HTMLDivElement>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const loadImage = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch(videoDetails.thumbnail);
-                const blob = await response.blob();
-
-                // Create a File from the Blob
-                const file = new File([blob], 'thumbnail.jpg', {
-                    type: blob.type,
-                });
-
-                // Compress the image
-                const compressedBlob = await imageCompression(file, {
-                    maxSizeMB: 1, // Maximum size in MB
-                    maxWidthOrHeight: 800, // Maximum width or height
-                    useWebWorker: true, // Use web worker for better performance
-                });
-
-                // Create a URL for the compressed image
-                const compressedUrl = URL.createObjectURL(compressedBlob);
-                setCompressedImage(compressedUrl);
-            } catch (error) {
-                console.error('Error compressing image:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadImage();
-    }, [videoDetails.thumbnail]);
+    const { compressedImage, isLoading } = useCompressedImage(
+        videoDetails.thumbnail
+    );
 
     return (
         <>
@@ -132,7 +103,6 @@ export const VideoCardSide = ({ className, videoDetails }: Props) => {
                 <div className={cn(defaultClass, className)}>
                     <figure className="aspect-video w-40 h-fit shrink-0">
                         <div
-                            ref={imgRef}
                             className="h-full w-full object-center object-cover"
                             style={{
                                 backgroundImage: compressedImage

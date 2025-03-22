@@ -2,7 +2,7 @@ import { useLayoutEffect, useState } from 'react';
 import VideoCard, { NoVideoCard } from '../components/VideoCard';
 import useFetch from '../hooks/useFetch';
 import { Video, VideoResponse } from '../utils/types';
-import Error from '../components/Error';
+import { ErrorComponent } from '../components/Error';
 
 const Home = () => {
     const [videoArr, setVideoArr] = useState<Video[] | []>([]);
@@ -24,9 +24,17 @@ const Home = () => {
     if (error)
         return (
             <div className="flex w-full h-full items-center justify-center">
-                <Error error={error} />
+                <ErrorComponent error={error} />
             </div>
         );
+
+    if (!loading && !videoArr.length) {
+        return (
+            <div className="flex items-center justify-center w-full h-full col-span-3">
+                <NoVideoCard />
+            </div>
+        );
+    }
 
     return (
         <div className="w-full grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 p-4">
@@ -46,7 +54,7 @@ const Home = () => {
                         );
                     })}
                 </>
-            ) : videoArr && videoArr.length ? (
+            ) : (
                 videoArr.map((v) => {
                     return (
                         <VideoCard
@@ -56,10 +64,6 @@ const Home = () => {
                         />
                     );
                 })
-            ) : (
-                <div className="flex items-center justify-center w-full h-full col-span-3">
-                    <NoVideoCard />
-                </div>
             )}
         </div>
     );
