@@ -31,3 +31,22 @@ export const protectedRoute = asyncHandler(async (req, res, next) => {
 
     next();
 });
+
+export const unProtectedRoute = asyncHandler(async (req, res, next) => {
+    const token =
+        req.cookies?.authToken || req.headers['authToken']?.split(' ')[1];
+
+    if (!token) return next((req.user = null));
+
+    const { userId } = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!userId) return next((req.user = null));
+
+    const user = await User.findById(userId);
+
+    if (!user) return next((req.user = null));
+
+    req.user = user;
+
+    next();
+});

@@ -6,7 +6,10 @@ import {
     deleteVideo,
     getAllVideo,
 } from '../controllers/video.controller.js';
-import { protectedRoute } from '../middlewares/user.middleware.js';
+import {
+    protectedRoute,
+    unProtectedRoute,
+} from '../middlewares/user.middleware.js';
 import { videoPostValidator } from '../validators/video.validator.js';
 
 const router = Router();
@@ -18,7 +21,7 @@ const uploads = upload.fields([
 router.post('/post', protectedRoute, uploads, videoPostValidator, uploadVideo);
 
 router.get('/', getAllVideo);
-router.get('/:id', getVideo);
+router.get('/:id', unProtectedRoute, getVideo);
 
 router.delete('/:id', protectedRoute, deleteVideo);
 

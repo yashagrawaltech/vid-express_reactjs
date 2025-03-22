@@ -87,6 +87,20 @@ export const getVideo = asyncHandler(async (req, res, next) => {
             new ApiError(statusCodes.BAD_REQUEST, 'video is not available')
         );
 
+    if (req.user && req.user._id) {
+        const user = await User.findById(req.user._id);
+
+        const idIndex = user.watchHistory.indexOf(video._id);
+
+        if (idIndex !== -1) {
+            // ID exists, remove it
+            user.watchHistory.splice(idIndex, 1);
+        }
+
+        user.watchHistory.push(video._id);
+        await user.save();
+    }
+
     return res.status(statusCodes.OK).json(
         new ApiResponse(statusCodes.OK, '', {
             video,
