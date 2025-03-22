@@ -66,6 +66,12 @@ const SigninForm = () => {
 
     return (
         <form onSubmit={handleSubmit}>
+            {loading ? (
+                <div className="mb-2">
+                    <span className="loading loading-spinner text-primary"></span>
+                </div>
+            ) : null}
+
             <fieldset className="fieldset w-xs bg-base-200 border border-base-300 p-4 rounded-box">
                 {error && (
                     <Error
@@ -82,6 +88,7 @@ const SigninForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     name="email"
+                    disabled={loading ? true : false}
                 />
 
                 <label className="fieldset-label">Password</label>
@@ -92,9 +99,13 @@ const SigninForm = () => {
                     value={formData.password}
                     onChange={handleChange}
                     name="password"
+                    disabled={loading ? true : false}
                 />
 
-                <button className="btn btn-neutral mt-4">
+                <button
+                    disabled={loading ? true : false}
+                    className="btn btn-neutral mt-4"
+                >
                     {loading ? 'loading' : 'Signin'}
                 </button>
             </fieldset>

@@ -79,6 +79,11 @@ const SignupForm = () => {
 
     return (
         <form onSubmit={handleSubmit}>
+            {loading ? (
+                <div className="mb-2">
+                    <span className="loading loading-spinner text-primary"></span>
+                </div>
+            ) : null}
             <fieldset className="fieldset w-xs bg-base-200 border border-base-300 p-4 rounded-box">
                 {error && (
                     <Error
@@ -95,6 +100,7 @@ const SignupForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     name="email"
+                    disabled={loading ? true : false}
                 />
 
                 <label className="fieldset-label">Full Name</label>
@@ -105,6 +111,7 @@ const SignupForm = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     name="fullName"
+                    disabled={loading ? true : false}
                 />
 
                 <label className="fieldset-label">Password</label>
@@ -115,6 +122,7 @@ const SignupForm = () => {
                     value={formData.password}
                     onChange={handleChange}
                     name="password"
+                    disabled={loading ? true : false}
                 />
 
                 <label className="fieldset-label">Confirm Password</label>
@@ -125,9 +133,13 @@ const SignupForm = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     name="confirmPassword"
+                    disabled={loading ? true : false}
                 />
 
-                <button className="btn btn-neutral mt-4">
+                <button
+                    disabled={loading ? true : false}
+                    className="btn btn-neutral mt-4"
+                >
                     {loading ? 'loading' : 'Signup'}
                 </button>
             </fieldset>

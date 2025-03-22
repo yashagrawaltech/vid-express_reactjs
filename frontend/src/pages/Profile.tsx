@@ -125,6 +125,12 @@ const Profile = () => {
                     />
                 )}
 
+                {loading ? (
+                    <div className="mb-2">
+                        <span className="loading loading-spinner text-primary"></span>
+                    </div>
+                ) : null}
+
                 {/* Full Name */}
                 <fieldset className="fieldset w-full">
                     <legend className="fieldset-legend">Full Name</legend>
@@ -133,7 +139,9 @@ const Profile = () => {
                         placeholder={formData.fullName}
                         value={formData.fullName}
                         className="input w-full"
-                        disabled={state === 'disabled' ? true : false}
+                        disabled={
+                            state === 'disabled' || loading ? true : false
+                        }
                         onChange={handleChange}
                         name="fullName"
                     />
@@ -148,7 +156,9 @@ const Profile = () => {
                         placeholder={formData.username}
                         value={formData.username}
                         className="input w-full"
-                        disabled={state === 'disabled' ? true : false}
+                        disabled={
+                            state === 'disabled' || loading ? true : false
+                        }
                         onChange={handleChange}
                         name="username"
                     />
@@ -203,10 +213,12 @@ const Profile = () => {
                             type="submit"
                             onClick={handleSubmit}
                             className="btn btn-primary"
+                            disabled={loading ? true : false}
                         >
                             {loading ? 'loading' : 'Save'}
                         </button>
                         <button
+                            disabled={loading ? true : false}
                             className="btn btn-outline"
                             onClick={() => {
                                 setState((p) =>
@@ -229,7 +241,7 @@ const ForgotPasswordModal: React.FC<{
 }> = ({ dialogRef }) => {
     const [error, setError] = useState<ErrorResponse | null>(null);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const [forgotPasswordformData, setForgotPasswordformData] = useState({
         oldPassword: '',
@@ -251,7 +263,7 @@ const ForgotPasswordModal: React.FC<{
         e.preventDefault();
 
         setLoading(true);
-        setSuccess('');
+        setSuccessMessage('');
         const result = PasswordDataSchema.safeParse(forgotPasswordformData);
         if (!result.success) {
             setLoading(false);
@@ -271,8 +283,10 @@ const ForgotPasswordModal: React.FC<{
                 },
                 { withCredentials: true }
             );
-            if (response.data.message && response.data.success) {
-                setSuccess(response.data.message);
+            if (response.data.success && response.data.message) {
+                setSuccessMessage(response.data.message);
+                setError(null);
+                window.location.reload();
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -300,26 +314,36 @@ const ForgotPasswordModal: React.FC<{
                     </form>
                     <h3 className="font-bold text-lg">Update Password</h3>
                     <form onSubmit={handlePasswordSubmit}>
-                        {error && (
+                        {error ? (
                             <Error
                                 className="mb-2 mt-4"
                                 error={error.message}
                                 type="soft-style"
                             />
-                        )}
-                        {success && (
+                        ) : null}
+
+                        {loading ? (
+                            <div className="mb-2">
+                                <span className="loading loading-spinner text-primary"></span>
+                            </div>
+                        ) : null}
+
+                        {successMessage ? (
                             <div
                                 role="alert"
                                 className="alert alert-success alert-soft w-full mt-4 mb-2"
                             >
-                                <span>{success}</span>
+                                <span>{successMessage}</span>
                             </div>
-                        )}
+                        ) : null}
                         <fieldset className="fieldset w-full">
                             <legend className="fieldset-legend">
                                 Current Password
                             </legend>
                             <input
+                                disabled={
+                                    loading || successMessage ? true : false
+                                }
                                 type="password"
                                 placeholder={'Your Current Password'}
                                 value={forgotPasswordformData.oldPassword}
@@ -334,6 +358,9 @@ const ForgotPasswordModal: React.FC<{
                                 New Password
                             </legend>
                             <input
+                                disabled={
+                                    loading || successMessage ? true : false
+                                }
                                 type="password"
                                 placeholder={'Your New Password'}
                                 value={forgotPasswordformData.password}
@@ -348,6 +375,9 @@ const ForgotPasswordModal: React.FC<{
                                 Confirm Password
                             </legend>
                             <input
+                                disabled={
+                                    loading || successMessage ? true : false
+                                }
                                 type="password"
                                 placeholder={'Confirm New Password'}
                                 value={forgotPasswordformData.confirmPassword}
@@ -360,6 +390,7 @@ const ForgotPasswordModal: React.FC<{
                         <button
                             type="submit"
                             className="btn btn-primary ml-auto block mt-4"
+                            disabled={loading || successMessage ? true : false}
                         >
                             {loading ? 'loading' : 'Save'}
                         </button>

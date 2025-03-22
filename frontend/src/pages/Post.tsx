@@ -31,8 +31,6 @@ const DataSchema = z.object({
 });
 
 const Post = () => {
-    // const { username: realUsername, fullName: realFullName, email } = useUser();
-
     const [formData, setFormData] = useState<FormData>({
         video: null,
         title: '',
@@ -42,15 +40,13 @@ const Post = () => {
 
     const [error, setError] = useState<ErrorResponse | null>(null);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, files } = e.target;
-        console.log('File input change:', name, files); // Debugging line
 
         if (name === 'video' || name === 'thumbnail') {
             if (files && files.length > 0) {
-                console.log('Selected file:', files[0]); // Debugging line
                 setFormData((prev) => ({
                     ...prev,
                     [name]: files[0],
@@ -74,7 +70,7 @@ const Post = () => {
         e.preventDefault();
 
         setLoading(true);
-        setSuccess('');
+        setSuccessMessage('');
         const result = DataSchema.safeParse(formData);
         if (!result.success) {
             setLoading(false);
@@ -100,7 +96,8 @@ const Post = () => {
             );
 
             if (response.data.success) {
-                setSuccess('Video uploaded successfully');
+                setSuccessMessage('Video uploaded successfully');
+                setError(null);
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -110,6 +107,7 @@ const Post = () => {
             } else {
                 setError({ message: 'An unexpected error occurred' });
             }
+            setSuccessMessage('');
         } finally {
             setLoading(false);
         }
@@ -121,27 +119,34 @@ const Post = () => {
                 Post New Video
             </h1>
             <form className="flex flex-col" onSubmit={handleSubmit}>
-                {error && (
+                {error ? (
                     <Error
                         className="mb-2"
                         error={error.message}
                         type="soft-style"
                     />
-                )}
+                ) : null}
 
-                {success && (
+                {successMessage ? (
                     <div
                         role="alert"
                         className="alert alert-success alert-soft w-full mt-4 mb-2"
                     >
-                        <span>{success}</span>
+                        <span>{successMessage}</span>
                     </div>
-                )}
+                ) : null}
+
+                {loading ? (
+                    <div className="mt-4 mb-2">
+                        <span className="loading loading-spinner text-primary"></span>
+                    </div>
+                ) : null}
 
                 {/* Title */}
                 <fieldset className="fieldset w-full">
                     <legend className="fieldset-legend">Title</legend>
                     <input
+                        disabled={loading || successMessage ? true : false}
                         type="text"
                         placeholder={'Video Title'}
                         value={formData.title}
@@ -156,6 +161,7 @@ const Post = () => {
                 <fieldset className="fieldset w-full">
                     <legend className="fieldset-legend">Description</legend>
                     <input
+                        disabled={loading || successMessage ? true : false}
                         type="text"
                         placeholder={'Video Description'}
                         value={formData.description}
@@ -170,6 +176,7 @@ const Post = () => {
                 <fieldset className="fieldset w-full">
                     <legend className="fieldset-legend">Thumbnail</legend>
                     <input
+                        disabled={loading || successMessage ? true : false}
                         type="file"
                         className="file-input w-full"
                         onChange={handleChange}
@@ -182,6 +189,7 @@ const Post = () => {
                 <fieldset className="fieldset w-full">
                     <legend className="fieldset-legend">Video</legend>
                     <input
+                        disabled={loading || successMessage ? true : false}
                         type="file"
                         className="file-input w-full"
                         onChange={handleChange}
@@ -191,7 +199,11 @@ const Post = () => {
                 </fieldset>
 
                 <span className="w-full mt-4 flex">
-                    <button type="submit" className="btn btn-primary ml-auto">
+                    <button
+                        type="submit"
+                        className="btn btn-primary ml-auto"
+                        disabled={loading || successMessage ? true : false}
+                    >
                         {loading ? 'loading' : 'Post'}
                     </button>
                 </span>

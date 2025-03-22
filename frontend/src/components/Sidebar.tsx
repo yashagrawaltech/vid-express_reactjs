@@ -105,6 +105,7 @@ const Sidebar = () => {
                             <button
                                 className={'btn btn-soft btn-error w-full'}
                                 onClick={handleLogout}
+                                disabled={loading ? true : false}
                             >
                                 {loading ? 'loading' : 'Logout'}
                             </button>
