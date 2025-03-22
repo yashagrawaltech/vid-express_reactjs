@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import { SignleVideoResponse, VideoResponse } from '../utils/types';
-import Error from '../components/Error';
+import Error, { ErrorComponent } from '../components/Error';
 import { useState } from 'react';
 import { NoVideoCard, VideoCardSide } from '../components/VideoCard';
 
@@ -26,37 +26,39 @@ const VideoPage = () => {
         <div className="grid grid-cols-9 p-4 gap-4">
             <div className="video-container flex flex-col gap-2 col-span-9 lg:col-span-6 w-full">
                 <div className="w-full  aspect-video border border-base-200 rounded-md overflow-hidden">
-                    {!loading &&
-                    !error &&
-                    data &&
-                    data.data &&
-                    data.data.video ? (
-                        <>
-                            <video
-                                className="w-full h-full object-cover aspect-video"
-                                src={data.data.video.url}
-                                controls
-                                poster={data.data.video.thumbnail}
-                            />
-                        </>
-                    ) : null}
-
-                    {error ? (
-                        <div className=" w-full h-full object-contain aspect-video flex items-center justify-center">
-                            <Error error={error} />
-                        </div>
-                    ) : null}
-
                     {loading ? (
                         <div className=" w-full h-full object-contain aspect-video flex items-center justify-center">
                             <div className="skeleton h-full w-full rounded-none"></div>
                         </div>
+                    ) : data && data.data && data.data.video ? (
+                        <video
+                            className="w-full h-full object-cover aspect-video"
+                            src={data.data.video.url}
+                            controls
+                            poster={data.data.video.thumbnail}
+                        />
+                    ) : (
+                        <div className=" w-full h-full object-contain aspect-video flex items-center justify-center">
+                            <Error
+                                error={error ? error : 'Something went wrong'}
+                            />
+                        </div>
+                    )}
+
+                    {!loading && error ? (
+                        <div className=" w-full h-full object-contain aspect-video flex items-center justify-center">
+                            <Error error={error} />
+                        </div>
                     ) : null}
                 </div>
                 <h2 className="text-2xl font-semibold">
-                    {!loading && !error && data && data.data && data.data.video
-                        ? data.data.video.title
-                        : 'title unavailable'}
+                    {loading ? (
+                        <span className="loading loading-dots loading-sm"></span>
+                    ) : data && data.data && data.data.video.title ? (
+                        data.data.video.title
+                    ) : (
+                        'title not available'
+                    )}
                 </h2>
                 <div className="buttons flex items-center justify-between">
                     <div className="left flex items-center">
@@ -115,36 +117,36 @@ const VideoPage = () => {
                     className={`desc ${showDesc ? '' : 'truncate'}`}
                     onClick={() => setShowDesc((p) => !p)}
                 >
-                    {!loading && !error && data && data.data && data.data.video
-                        ? data.data.video.description
-                        : 'descriptio  unavailable'}
+                    {loading ? (
+                        <span className="loading loading-dots loading-sm"></span>
+                    ) : data && data.data && data.data.video.title ? (
+                        data.data.video.title
+                    ) : (
+                        'description not available'
+                    )}
                 </div>
             </div>
 
             <div className="suggestions col-span-9 lg:col-span-3 flex flex-col gap-4">
                 {suggestionLoading ? (
-                    <div className=" w-full h-full object-contain aspect-video flex items-center justify-center">
-                        <div className="skeleton h-full w-full"></div>
-                    </div>
-                ) : null}
-                {!suggestionError &&
-                !suggestionLoading &&
-                suggestionData &&
-                suggestionData.data &&
-                suggestionData.data.videos ? (
+                    <span className="loading loading-dots loading-sm"></span>
+                ) : suggestionData &&
+                  suggestionData.data &&
+                  suggestionData.data.videos ? (
                     suggestionData.data.videos.map((v) => {
-                        return (
-                            <VideoCardSide
-                                key={v._id}
-                                videoDetails={{ ...v }}
-                            />
-                        );
+                        return <VideoCardSide key={v._id} videoDetails={v} />;
                     })
                 ) : (
                     <div className="flex items-center justify-center w-full h-full col-span-3">
                         <NoVideoCard />
                     </div>
                 )}
+
+                {!suggestionLoading && suggestionError ? (
+                    <div className="flex w-full h-full items-center justify-center">
+                        <ErrorComponent error={suggestionError} />
+                    </div>
+                ) : null}
             </div>
         </div>
     );

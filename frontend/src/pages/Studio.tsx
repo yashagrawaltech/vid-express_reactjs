@@ -1,7 +1,8 @@
 import useFetch from '../hooks/useFetch';
 import { Video, VideoResponse } from '../utils/types';
 import VideoCard, { NoVideoCard } from '../components/VideoCard';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { ErrorComponent } from '../components/Error';
 
 const Studio = () => {
     const [videoArr, setVideoArr] = useState<Video[] | []>([]);
@@ -14,9 +15,11 @@ const Studio = () => {
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/videos`
     );
 
-    useLayoutEffect(() => {
-        if (videoData) {
+    useEffect(() => {
+        if (videoData && videoData.data && videoData.data.videos) {
             setVideoArr(videoData.data.videos);
+        } else {
+            setVideoArr([]);
         }
     }, [videoData]);
 
@@ -27,28 +30,15 @@ const Studio = () => {
             </h1>
             <div className="w-full grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4">
                 {loading ? (
-                    <>
-                        {[...Array(30)].map((_, idx) => {
-                            return (
-                                <div
-                                    key={idx}
-                                    className="flex w-full flex-col gap-4 mb-12"
-                                >
-                                    <div className="skeleton h-32 w-full"></div>
-                                    <div className="skeleton h-4 w-28"></div>
-                                    <div className="skeleton h-4 w-full"></div>
-                                    <div className="skeleton h-4 w-full"></div>
-                                </div>
-                            );
-                        })}
-                    </>
+                    <span className="loading loading-dots loading-md"></span>
                 ) : videoArr && videoArr.length ? (
                     videoArr.map((v) => {
                         return (
                             <VideoCard
                                 key={v._id}
-                                videoDetails={{ ...v }}
+                                videoDetails={v}
                                 className="w-full"
+                                edit={true}
                             />
                         );
                     })
@@ -57,6 +47,12 @@ const Studio = () => {
                         <NoVideoCard />
                     </div>
                 )}
+
+                {!loading && error ? (
+                    <div className="flex w-full h-full items-center justify-center">
+                        <ErrorComponent error={error} />
+                    </div>
+                ) : null}
             </div>
         </div>
     );

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 interface Props {
     className?: string;
     videoDetails: Video;
+    edit?: boolean;
 }
 
 // Custom hook for image loading and compression
@@ -46,7 +47,7 @@ const useCompressedImage = (thumbnail: string) => {
     return { compressedImage, isLoading };
 };
 
-const VideoCard = ({ className, videoDetails }: Props) => {
+const VideoCard = ({ className, videoDetails, edit = false }: Props) => {
     const defaultClass =
         'card bg-base-100 w-96 shadow-sm border border-base-100';
     const timeAgoValue = timeAgo(videoDetails.createdAt);
@@ -80,6 +81,13 @@ const VideoCard = ({ className, videoDetails }: Props) => {
                         <p className="-mt-2 opacity-70">
                             {videoDetails.views} | {timeAgoValue}
                         </p>
+                        {edit ? (
+                            <div className="card-actions justify-end">
+                                <button className="btn btn-outline hover:btn-primary">
+                                    Edit
+                                </button>
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </Link>

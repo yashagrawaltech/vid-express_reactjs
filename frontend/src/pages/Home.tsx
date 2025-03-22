@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import VideoCard, { NoVideoCard } from '../components/VideoCard';
 import useFetch from '../hooks/useFetch';
 import { Video, VideoResponse } from '../utils/types';
@@ -15,9 +15,11 @@ const Home = () => {
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video`
     );
 
-    useLayoutEffect(() => {
-        if (videoData) {
+    useEffect(() => {
+        if (videoData && videoData.data && videoData.data.videos) {
             setVideoArr(videoData.data.videos);
+        } else {
+            setVideoArr([]);
         }
     }, [videoData]);
 
@@ -28,16 +30,8 @@ const Home = () => {
             </div>
         );
 
-    if (!loading && !videoArr.length) {
-        return (
-            <div className="flex items-center justify-center w-full h-full col-span-3">
-                <NoVideoCard />
-            </div>
-        );
-    }
-
     return (
-        <div className="w-full grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 p-4">
+        <div className="w-full min-h-full grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 p-4">
             {loading ? (
                 <>
                     {[...Array(30)].map((_, idx) => {
@@ -54,16 +48,20 @@ const Home = () => {
                         );
                     })}
                 </>
-            ) : (
+            ) : videoArr && videoArr.length ? (
                 videoArr.map((v) => {
                     return (
                         <VideoCard
                             key={v._id}
-                            videoDetails={{ ...v }}
+                            videoDetails={v}
                             className="w-full"
                         />
                     );
                 })
+            ) : (
+                <div className="flex items-center justify-center w-full h-full col-span-3">
+                    <NoVideoCard />
+                </div>
             )}
         </div>
     );
