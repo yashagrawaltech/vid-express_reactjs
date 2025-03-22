@@ -11,6 +11,8 @@ import Profile from './pages/Profile';
 import { ProtectedRouteProvider } from './components/ProtectedRouteProvider';
 import Post from './pages/Post';
 import VideoPage from './pages/Video';
+import WatchHistory from './pages/WatchHistory';
+import Studio from './pages/Studio';
 
 const routes: RouteObject[] = [
     {
@@ -37,6 +39,22 @@ const routes: RouteObject[] = [
             {
                 path: 'video/:id',
                 element: <VideoPage />,
+            },
+            {
+                path: 'watch-history',
+                element: (
+                    <ProtectedRouteProvider>
+                        <WatchHistory />
+                    </ProtectedRouteProvider>
+                ),
+            },
+            {
+                path: 'studio',
+                element: (
+                    <ProtectedRouteProvider>
+                        <Studio />
+                    </ProtectedRouteProvider>
+                ),
             },
         ],
     },

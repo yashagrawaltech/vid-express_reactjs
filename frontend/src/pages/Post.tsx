@@ -68,8 +68,6 @@ const Post = () => {
         }
     };
 
-    console.log(formData);
-
     const handleSubmit = async (
         e: React.FormEvent<HTMLFormElement | HTMLButtonElement>
     ) => {

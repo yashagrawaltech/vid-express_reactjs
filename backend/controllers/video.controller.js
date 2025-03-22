@@ -78,6 +78,38 @@ export const getAllVideo = asyncHandler(async (req, res, next) => {
     );
 });
 
+export const getWatchHistory = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate({
+        path: 'watchHistory',
+        populate: {
+            path: 'owner',
+        },
+    });
+    const watchHistory = user.watchHistory;
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            watchHistory,
+        })
+    );
+});
+
+export const getUserVideos = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate({
+        path: 'videos',
+        populate: {
+            path: 'owner',
+        },
+    });
+    const videos = user.videos;
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            videos,
+        })
+    );
+});
+
 export const getVideo = asyncHandler(async (req, res, next) => {
     const id = req.params.id;
 

@@ -20,6 +20,15 @@ export interface VideoResponse {
     message: string;
 }
 
+export interface WatchHistoryResponse {
+    statusCode: number;
+    success: boolean;
+    data: {
+        watchHistory: Video[];
+    };
+    message: string;
+}
+
 export interface SignleVideoResponse {
     statusCode: number;
     success: boolean;

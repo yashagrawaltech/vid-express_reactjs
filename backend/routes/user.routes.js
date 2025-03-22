@@ -16,6 +16,10 @@ import {
     editProfileValidator,
 } from '../validators/user.validator.js';
 import { protectedRoute } from '../middlewares/user.middleware.js';
+import {
+    getUserVideos,
+    getWatchHistory,
+} from '../controllers/video.controller.js';
 
 const router = Router();
 
@@ -37,6 +41,8 @@ router.post(
 );
 
 router.get('/', protectedRoute, getUserProfile);
+router.get('/watch-history', protectedRoute, getWatchHistory);
+router.get('/videos', protectedRoute, getUserVideos);
 router.get('/:id', getUserProfileByUserId);
 
 export default router;

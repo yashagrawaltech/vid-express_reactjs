@@ -45,7 +45,7 @@ const Sidebar = () => {
                 Home
             </NavLink>
             <NavLink
-                to={'/history'}
+                to={'/watch-history'}
                 className={({ isActive }) =>
                     `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
                 }
