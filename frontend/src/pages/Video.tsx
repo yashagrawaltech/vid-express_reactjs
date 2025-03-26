@@ -22,6 +22,10 @@ const VideoPage = () => {
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video`
     );
 
+    // console.log(data)
+
+    const [isSubscribed, setIsSubscribed] = useState(true);
+
     return (
         <div className="grid grid-cols-9 p-4 gap-4">
             <div className="video-container flex flex-col gap-2 col-span-9 lg:col-span-6 w-full">
@@ -60,28 +64,49 @@ const VideoPage = () => {
                         'title not available'
                     )}
                 </h2>
+                <div className="channel-details flex items-center mt-4 mb-2 gap-4">
+                    <div
+                        className={`avatar ${data && data.data.video.owner.avatar ? '' : 'avatar-placeholder'}`}
+                    >
+                        {data && data.data && data.data.video.owner.avatar ? (
+                            <div className="w-12 rounded-full">
+                                <img src={data.data.video.owner.avatar} />
+                            </div>
+                        ) : (
+                            <div className="w-12 rounded-full bg-primary text-2xl">
+                                {data &&
+                                    data.data.video.owner.fullName.toString()[0]}
+                            </div>
+                        )}
+                    </div>
+                    {loading ? (
+                        <span className="loading loading-dots loading-sm"></span>
+                    ) : data && data.data && data.data.video.title ? (
+                        <h4 className="text-lg font-semibold">
+                            {data.data.video.owner.username}
+                        </h4>
+                    ) : (
+                        'username not available'
+                    )}
+                </div>
                 <div className="buttons flex items-center justify-between">
                     <div className="left flex items-center">
-                        <button className="btn btn-ghost btn-circle">
-                            <svg
-                                className="w-6 h-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                            >
-                                <path d="M14.5998 8.00033H21C22.1046 8.00033 23 8.89576 23 10.0003V12.1047C23 12.3659 22.9488 12.6246 22.8494 12.8662L19.755 20.3811C19.6007 20.7558 19.2355 21.0003 18.8303 21.0003H2C1.44772 21.0003 1 20.5526 1 20.0003V10.0003C1 9.44804 1.44772 9.00033 2 9.00033H5.48184C5.80677 9.00033 6.11143 8.84246 6.29881 8.57701L11.7522 0.851355C11.8947 0.649486 12.1633 0.581978 12.3843 0.692483L14.1984 1.59951C15.25 2.12534 15.7931 3.31292 15.5031 4.45235L14.5998 8.00033ZM7 10.5878V19.0003H18.1606L21 12.1047V10.0003H14.5998C13.2951 10.0003 12.3398 8.77128 12.6616 7.50691L13.5649 3.95894C13.6229 3.73105 13.5143 3.49353 13.3039 3.38837L12.6428 3.0578L7.93275 9.73038C7.68285 10.0844 7.36341 10.3746 7 10.5878ZM5 11.0003H3V19.0003H5V11.0003Z"></path>
-                            </svg>
+                        <button
+                            className={`btn ${isSubscribed ? 'btn-soft btn-success' : 'btn-primary'}`}
+                        >
+                            {isSubscribed && (
+                                <svg
+                                    className="w-6 h-6"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <path d="M11.602 13.7599L13.014 15.1719L21.4795 6.7063L22.8938 8.12051L13.014 18.0003L6.65 11.6363L8.06421 10.2221L10.189 12.3469L11.6025 13.7594L11.602 13.7599ZM11.6037 10.9322L16.5563 5.97949L17.9666 7.38977L13.014 12.3424L11.6037 10.9322ZM8.77698 16.5873L7.36396 18.0003L1 11.6363L2.41421 10.2221L3.82723 11.6352L3.82604 11.6363L8.77698 16.5873Z"></path>
+                                </svg>
+                            )}
+                            Subscribe
                         </button>
-                        <button className="btn btn-ghost btn-circle">
-                            <svg
-                                className="w-6 h-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                            >
-                                <path d="M6.45455 19L2 22.5V4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V18C22 18.5523 21.5523 19 21 19H6.45455ZM5.76282 17H20V5H4V18.3851L5.76282 17ZM11 10H13V12H11V10ZM7 10H9V12H7V10ZM15 10H17V12H15V10Z"></path>
-                            </svg>
-                        </button>
+
                         <button className="btn btn-ghost btn-circle">
                             <svg
                                 className="w-6 h-6"
@@ -114,13 +139,13 @@ const VideoPage = () => {
                     </div>
                 </div>
                 <div
-                    className={`desc ${showDesc ? '' : 'truncate'}`}
+                    className={`desc cursor-pointer ${showDesc ? '' : 'line-clamp-1'}`}
                     onClick={() => setShowDesc((p) => !p)}
                 >
                     {loading ? (
                         <span className="loading loading-dots loading-sm"></span>
-                    ) : data && data.data && data.data.video.title ? (
-                        data.data.video.title
+                    ) : data && data.data && data.data.video.description ? (
+                        data.data.video.description
                     ) : (
                         'description not available'
                     )}

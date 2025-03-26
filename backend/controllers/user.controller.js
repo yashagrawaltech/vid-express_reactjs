@@ -88,16 +88,20 @@ export const editUserProfile = asyncHandler(async (req, res, next) => {
         );
     }
 
-    const { username: usernameQuery, fullName: fullNamequery } = req.query;
+    const {
+        username: usernameQuery,
+        fullName: fullNamequery,
+        bio: bioQuery,
+    } = req.query;
 
-    if (!usernameQuery && !fullNamequery) {
-        return next(
-            new ApiError(
-                statusCodes.CONFLICT,
-                `query parameters are required for profile update`
-            )
-        );
-    }
+    // if (!usernameQuery && !fullNamequery) {
+    //     return next(
+    //         new ApiError(
+    //             statusCodes.CONFLICT,
+    //             `query parameters are required for profile update`
+    //         )
+    //     );
+    // }
 
     const user = await User.findById(req.user._id);
 
@@ -110,6 +114,12 @@ export const editUserProfile = asyncHandler(async (req, res, next) => {
     if (fullNamequery) {
         const { fullName } = req.body;
         user.fullName = fullName;
+        await user.save();
+    }
+
+    if (bioQuery) {
+        const { bio } = req.body;
+        user.bio = bio;
         await user.save();
     }
 

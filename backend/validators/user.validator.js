@@ -27,14 +27,19 @@ export const userPasswordValidator = [
 ];
 
 export const editProfileValidator = [
-    query('fullName').equals('true'),
+    query('fullName').optional().equals('true'),
     body('fullName')
         .if(query('fullName').equals('true'))
         .notEmpty()
         .withMessage('Full Name is required'),
-    query('username').equals('true'),
+    query('username').optional().equals('true'),
     body('username')
         .if(query('username').equals('true'))
         .notEmpty()
         .withMessage('Username is required'),
+    query('bio').optional().equals('true'),
+    body('bio')
+        .if(query('bio').equals('true'))
+        .notEmpty()
+        .withMessage('bio is required'),
 ];

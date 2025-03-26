@@ -110,14 +110,33 @@ export const getUserVideos = asyncHandler(async (req, res, next) => {
     );
 });
 
+export const likeVideo = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate({
+        path: 'videos',
+        populate: {
+            path: 'owner',
+        },
+    });
+    const videos = user.videos;
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            videos,
+        })
+    );
+});
+
 export const getVideo = asyncHandler(async (req, res, next) => {
     const id = req.params.id;
 
-    const video = await Video.findById(id);
+    const video = await Video.findById(id).populate('owner');
     if (!video)
         return next(
             new ApiError(statusCodes.BAD_REQUEST, 'video is not available')
         );
+
+    video.views = video.views + 1;
+    await video.save();
 
     if (req.user && req.user._id) {
         const user = await User.findById(req.user._id);

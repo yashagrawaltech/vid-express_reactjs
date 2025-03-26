@@ -27,12 +27,20 @@ type ErrorResponse = {
 };
 
 const Profile = () => {
-    const { username: realUsername, fullName: realFullName, email } = useUser();
+    const {
+        username: realUsername,
+        fullName: realFullName,
+        email,
+        coverImage,
+        avatar,
+        bio: realBio,
+    } = useUser();
     const [state, setState] = useState<'disabled' | 'edit'>('disabled');
 
     const [formData, setFormData] = useState({
         fullName: '',
         username: '',
+        bio: '',
     });
 
     const [error, setError] = useState<ErrorResponse | null>(null);
@@ -52,6 +60,12 @@ const Profile = () => {
         }
     }, [realFullName]);
 
+    useEffect(() => {
+        if (realBio) {
+            setFormData((p) => ({ ...p, bio: realBio }));
+        }
+    }, [realBio]);
+
     const setDefaultValues = () => {
         if (realUsername) {
             setFormData((p) => ({ ...p, username: realUsername }));
@@ -59,9 +73,14 @@ const Profile = () => {
         if (realFullName) {
             setFormData((p) => ({ ...p, fullName: realFullName }));
         }
+        if (realBio) {
+            setFormData((p) => ({ ...p, bio: realBio }));
+        }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
         if (error) {
@@ -88,7 +107,7 @@ const Profile = () => {
 
         try {
             await axios.post(
-                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/edit-profile?username=true&fullName=true`,
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/edit-profile?username=true&fullName=true&bio=true`,
                 formData,
                 { withCredentials: true }
             );
@@ -106,13 +125,31 @@ const Profile = () => {
         }
     };
 
+    const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
     return (
         <div className="w-full p-4 flex flex-col gap-4">
-            <div className="avatar avatar-placeholder w-full flex justify-center">
-                <div className="bg-primary text-neutral-content w-24 rounded-full">
-                    <span className="text-3xl">
-                        {formData.fullName.toString()[0]}
-                    </span>
+            <div className="cover-image w-full h-48 bg-primary-content rounded-md overflow-hidden">
+                <img
+                    className="w-full h-full object-cover object-center"
+                    src={coverImage}
+                    alt="cover-image"
+                />
+            </div>
+            <div className="avatar avatar-placeholder w-full flex justify-center -mt-16">
+                <div className="bg-primary text-neutral-content w-24 rounded-full border-2 shadow-md">
+                    {avatar ? (
+                        <img
+                            loading="lazy"
+                            className="w-full h-full object-cover object-center"
+                            src={avatar}
+                            alt="avatar"
+                        />
+                    ) : (
+                        <span className="text-3xl">
+                            {formData.fullName.toString()[0]}
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -161,6 +198,29 @@ const Profile = () => {
                         }
                         onChange={handleChange}
                         name="username"
+                    />
+                    <p className="fieldset-label"></p>
+                </fieldset>
+
+                {/* Bio */}
+                <fieldset className="fieldset w-full">
+                    <legend className="fieldset-legend">Bio</legend>
+                    <textarea
+                        ref={textAreaRef}
+                        placeholder={formData.bio}
+                        value={formData.bio}
+                        className="input w-full h-fit text-wrap overflow-hidden"
+                        disabled={
+                            state === 'disabled' || loading ? true : false
+                        }
+                        style={{
+                            height: textAreaRef.current?.scrollHeight + 'px',
+                            minHeight: '12rem',
+                            padding: '0.75rem',
+                            resize: state === 'disabled' ? 'none' : 'vertical',
+                        }}
+                        onChange={handleChange}
+                        name="bio"
                     />
                     <p className="fieldset-label"></p>
                 </fieldset>

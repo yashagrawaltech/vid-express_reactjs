@@ -1,8 +1,6 @@
 export interface Video {
     createdAt: Date;
-    owner: {
-        username: string;
-    };
+    owner: User;
     thumbnail: string;
     _id: string;
     views: number;
@@ -46,6 +44,9 @@ export interface User {
     email: string;
     loading: boolean;
     error: string;
+    coverImage: string;
+    avatar: string;
+    bio: string;
 }
 
 export interface UserResponse {
