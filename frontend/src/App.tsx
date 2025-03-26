@@ -13,13 +13,17 @@ import Post from './pages/Post';
 import VideoPage from './pages/Video';
 import WatchHistory from './pages/WatchHistory';
 import Studio from './pages/Studio';
+import { LRUCacheProvider } from './context/LRUCacheProvider';
 
 const routes: RouteObject[] = [
     {
         path: '/',
         element: <MainLayout />,
         children: [
-            { path: '', element: <Home /> },
+            {
+                path: '',
+                element: <Home />,
+            },
             {
                 path: 'profile',
                 element: (
@@ -73,7 +77,9 @@ const router = createBrowserRouter(routes);
 const App = () => {
     return (
         <>
-            <RouterProvider router={router} />
+            <LRUCacheProvider>
+                <RouterProvider router={router} />
+            </LRUCacheProvider>
         </>
     );
 };

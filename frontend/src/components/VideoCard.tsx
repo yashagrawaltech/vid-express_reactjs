@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+// import { useCompressedImage } from '../hooks/useCompressedImages';
 import { cn } from '../utils/cn';
 import { timeAgo } from '../utils/time-ago';
 import { Video } from '../utils/types';
-import imageCompression from 'browser-image-compression';
 import { Link } from 'react-router-dom';
 
 interface Props {
@@ -11,49 +10,13 @@ interface Props {
     edit?: boolean;
 }
 
-// Custom hook for image loading and compression
-const useCompressedImage = (thumbnail: string) => {
-    const [compressedImage, setCompressedImage] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const loadImage = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch(thumbnail);
-                const blob = await response.blob();
-                const file = new File([blob], 'thumbnail.jpg', {
-                    type: blob.type,
-                });
-
-                const compressedBlob = await imageCompression(file, {
-                    maxSizeMB: 1,
-                    maxWidthOrHeight: 800,
-                    useWebWorker: true,
-                });
-
-                const compressedUrl = URL.createObjectURL(compressedBlob);
-                setCompressedImage(compressedUrl);
-            } catch (error) {
-                console.error('Error compressing image:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadImage();
-    }, [thumbnail]);
-
-    return { compressedImage, isLoading };
-};
-
 const VideoCard = ({ className, videoDetails, edit = false }: Props) => {
     const defaultClass =
         'card bg-base-100 w-96 shadow-sm border border-base-100';
     const timeAgoValue = timeAgo(videoDetails.createdAt);
-    const { compressedImage, isLoading } = useCompressedImage(
-        videoDetails.thumbnail
-    );
+    // const { compressedImage, isLoading } = useCompressedImage(
+    //     videoDetails.thumbnail
+    // );
 
     return (
         <>
@@ -63,16 +26,16 @@ const VideoCard = ({ className, videoDetails, edit = false }: Props) => {
                         <div
                             className="h-full w-full object-center object-cover"
                             style={{
-                                backgroundImage: compressedImage
-                                    ? `url(${compressedImage})`
+                                backgroundImage: videoDetails.thumbnail
+                                    ? `url(${videoDetails.thumbnail})`
                                     : 'none',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                             }}
                         >
-                            {isLoading ? (
+                            {/* {isLoading ? (
                                 <div className="skeleton h-full w-full rounded-none"></div>
-                            ) : null}
+                            ) : null} */}
                         </div>
                     </figure>
                     <div className="card-body">
@@ -98,9 +61,9 @@ const VideoCard = ({ className, videoDetails, edit = false }: Props) => {
 export const VideoCardSide = ({ className, videoDetails }: Props) => {
     const defaultClass =
         'flex justify-start items-start gap-4 rounded-sm overflow-hidden border border-base-200';
-    const { compressedImage, isLoading } = useCompressedImage(
-        videoDetails.thumbnail
-    );
+    // const { compressedImage, isLoading } = useCompressedImage(
+    //     videoDetails.thumbnail
+    // );
 
     return (
         <>
@@ -113,16 +76,16 @@ export const VideoCardSide = ({ className, videoDetails }: Props) => {
                         <div
                             className="h-full w-full object-center object-cover"
                             style={{
-                                backgroundImage: compressedImage
-                                    ? `url(${compressedImage})`
+                                backgroundImage: videoDetails.thumbnail
+                                    ? `url(${videoDetails.thumbnail})`
                                     : 'none',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                             }}
                         >
-                            {isLoading ? (
+                            {/* {isLoading ? (
                                 <div className="skeleton h-full w-full rounded-none"></div>
-                            ) : null}
+                            ) : null} */}
                         </div>
                     </figure>
                     <div className="py-1 w-full overflow-hidden">
