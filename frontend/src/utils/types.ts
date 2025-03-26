@@ -44,9 +44,9 @@ export interface User {
     email: string;
     loading: boolean;
     error: string;
-    coverImage: string;
-    avatar: string;
-    bio: string;
+    coverImage?: string;
+    avatar?: string;
+    bio?: string;
 }
 
 export interface UserResponse {
