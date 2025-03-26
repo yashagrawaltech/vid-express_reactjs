@@ -26,8 +26,6 @@ const VideoPage = () => {
 
     const [isSubscribed, setIsSubscribed] = useState(true);
 
-    setIsSubscribed(false);
-
     return (
         <div className="grid grid-cols-9 p-4 gap-4">
             <div className="video-container flex flex-col gap-2 col-span-9 lg:col-span-6 w-full">
@@ -94,6 +92,7 @@ const VideoPage = () => {
                 <div className="buttons flex items-center justify-between">
                     <div className="left flex items-center">
                         <button
+                            onClick={() => setIsSubscribed((p) => !p)}
                             className={`btn ${isSubscribed ? 'btn-soft btn-success' : 'btn-primary'}`}
                         >
                             {isSubscribed && (
