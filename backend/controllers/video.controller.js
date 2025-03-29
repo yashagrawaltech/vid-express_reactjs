@@ -139,7 +139,7 @@ export const searchVideos = asyncHandler(async (req, res, next) => {
 
     const results = await Video.find({
         title: { $regex: `^${key}`, $options: 'i' }, // 'i' for case-insensitive search
-    });
+    }).select("title _id");
 
     return res.status(statusCodes.OK).json(
         new ApiResponse(statusCodes.OK, '', {
