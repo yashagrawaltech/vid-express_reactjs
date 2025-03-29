@@ -149,6 +149,7 @@ const Header = ({
                                       )
                                     : null;
                             }}
+                            onBlur={() => setShowOverlay(false)}
                             id="search-box"
                         />
                         {showSearchResults && (
