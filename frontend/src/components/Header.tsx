@@ -1,4 +1,4 @@
-import { ErrorResponse, Link } from 'react-router-dom';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useEffect, useRef, useState } from 'react';
 import SearchResults from './SearchResults';
@@ -30,6 +30,8 @@ const Header = ({
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
     const suggestionContainerRef = useRef<HTMLDivElement | null>(null);
+
+    const navigate = useNavigate();
 
     const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -138,6 +140,14 @@ const Header = ({
                             onChange={(e) => {
                                 setShowSearchResults(true);
                                 handleSearch(e);
+                            }}
+                            onKeyDown={(e) => {
+                                setShowSearchResults(false);
+                                return e.key === 'Enter'
+                                    ? navigate(
+                                          `/search?key=${e.currentTarget.value}`
+                                      )
+                                    : null;
                             }}
                             id="search-box"
                         />
