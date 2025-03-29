@@ -126,6 +126,28 @@ export const likeVideo = asyncHandler(async (req, res, next) => {
     );
 });
 
+export const searchVideos = asyncHandler(async (req, res, next) => {
+    const key = req.params.key;
+
+    if (!key) {
+        return res.status(statusCodes.OK).json(
+            new ApiResponse(statusCodes.OK, '', {
+                results: [],
+            })
+        );
+    }
+
+    const results = await Video.find({
+        title: { $regex: `^${key}`, $options: 'i' }, // 'i' for case-insensitive search
+    });
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            results,
+        })
+    );
+});
+
 export const getVideo = asyncHandler(async (req, res, next) => {
     const id = req.params.id;
 

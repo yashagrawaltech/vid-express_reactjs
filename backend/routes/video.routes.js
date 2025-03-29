@@ -5,6 +5,7 @@ import {
     getVideo,
     deleteVideo,
     getAllVideo,
+    searchVideos,
 } from '../controllers/video.controller.js';
 import {
     protectedRoute,
@@ -22,6 +23,7 @@ router.post('/post', protectedRoute, uploads, videoPostValidator, uploadVideo);
 
 router.get('/', getAllVideo);
 router.get('/:id', unProtectedRoute, getVideo);
+router.get('/search/:key', searchVideos);
 
 router.delete('/:id', protectedRoute, deleteVideo);
 
