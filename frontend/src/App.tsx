@@ -14,6 +14,7 @@ import VideoPage from './pages/Video';
 import WatchHistory from './pages/WatchHistory';
 import Studio from './pages/Studio';
 import { LRUCacheProvider } from './context/LRUCacheProvider';
+import Search from './pages/Search';
 
 const routes: RouteObject[] = [
     {
@@ -43,6 +44,10 @@ const routes: RouteObject[] = [
             {
                 path: 'video/:id',
                 element: <VideoPage />,
+            },
+            {
+                path: 'search',
+                element: <Search />,
             },
             {
                 path: 'watch-history',

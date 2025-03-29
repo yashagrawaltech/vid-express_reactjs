@@ -1,5 +1,22 @@
-import { Link } from 'react-router-dom';
+import { ErrorResponse, Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { useEffect, useRef, useState } from 'react';
+import SearchResults from './SearchResults';
+import axios, { AxiosError } from 'axios';
+
+interface SearchResult {
+    _id: string;
+    title: string;
+}
+
+interface SearchResponse {
+    statusCode: number;
+    message: string;
+    data: {
+        results: SearchResult[];
+    };
+    success: boolean;
+}
 
 const Header = ({
     setShowSideBar,
@@ -8,8 +25,61 @@ const Header = ({
 }) => {
     const { username, fullName } = useUser();
 
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [showOverlay, setShowOverlay] = useState(false);
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
+    const suggestionContainerRef = useRef<HTMLDivElement | null>(null);
+
+    const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+
+        try {
+            if (e.currentTarget.value) {
+                const response = await axios.get<SearchResponse>(
+                    `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/search/${e.currentTarget.value}`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+
+                if (response && response.data && response.data.data) {
+                    setSearchResults(response.data.data.results);
+                }
+            } else {
+                setSearchResults([]);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError<ErrorResponse>;
+                throw new Error(axiosError.message);
+            } else {
+                throw new Error('An unknown error occurred');
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (showSearchResults) {
+            setShowOverlay(true);
+            window.onclick = (e) => {
+                if (
+                    e.target !== suggestionContainerRef.current &&
+                    suggestionContainerRef.current &&
+                    e.target !== document.getElementById('search-box')
+                ) {
+                    setShowSearchResults(false);
+                    setShowOverlay(false);
+                }
+            };
+        }
+    }, [showSearchResults]);
+
     return (
         <div className="flex">
+            {showOverlay && (
+                <div className="overlay w-dvw h-dvh fixed top-0 left-0 bg-transparent z-0"></div>
+            )}
             <div className="navbar bg-base-100 shadow-sm md:px-2">
                 <div className="navbar-start w-fit lg:w-full mr-2">
                     <div
@@ -43,7 +113,7 @@ const Header = ({
                     </Link>
                 </div>
                 <div className="navbar-end w-full ml-2">
-                    <label className="input hidden md:flex">
+                    <label className="input hidden md:flex relative">
                         <svg
                             className="h-[1em] opacity-50"
                             xmlns="http://www.w3.org/2000/svg"
@@ -64,9 +134,20 @@ const Header = ({
                             type="search"
                             className="grow"
                             placeholder="Search"
+                            onClick={() => setShowSearchResults(true)}
+                            onChange={(e) => {
+                                setShowSearchResults(true);
+                                handleSearch(e);
+                            }}
+                            id="search-box"
                         />
-                        <kbd className="kbd kbd-sm">⌘</kbd>
-                        <kbd className="kbd kbd-sm">K</kbd>
+                        {showSearchResults && (
+                            <SearchResults
+                                containerRef={suggestionContainerRef}
+                                className="absolute w-[70dvw] mt-2 right-0 top-full z-50"
+                                sResults={searchResults}
+                            />
+                        )}
                     </label>
                     <button className="btn btn-ghost btn-circle md:hidden">
                         <svg
