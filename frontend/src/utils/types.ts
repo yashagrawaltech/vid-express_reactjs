@@ -57,3 +57,18 @@ export interface UserResponse {
     };
     message: string;
 }
+
+export interface Subs {
+    _id: string;
+    subscriber: string;
+    channel: User;
+}
+
+export interface SubsResponse {
+    statusCode: number;
+    success: boolean;
+    data: {
+        subs: Subs[];
+    };
+    message: string;
+}

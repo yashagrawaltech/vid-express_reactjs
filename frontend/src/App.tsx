@@ -15,6 +15,8 @@ import WatchHistory from './pages/WatchHistory';
 import Studio from './pages/Studio';
 import { LRUCacheProvider } from './context/LRUCacheProvider';
 import Search from './pages/Search';
+import Subscription from './pages/Subscription';
+import SearchSuggestion from './pages/SearchSuggestion';
 
 const routes: RouteObject[] = [
     {
@@ -50,6 +52,10 @@ const routes: RouteObject[] = [
                 element: <Search />,
             },
             {
+                path: 'search-suggestion',
+                element: <SearchSuggestion />,
+            },
+            {
                 path: 'watch-history',
                 element: (
                     <ProtectedRouteProvider>
@@ -62,6 +68,14 @@ const routes: RouteObject[] = [
                 element: (
                     <ProtectedRouteProvider>
                         <Studio />
+                    </ProtectedRouteProvider>
+                ),
+            },
+            {
+                path: 'subscriptions',
+                element: (
+                    <ProtectedRouteProvider>
+                        <Subscription />
                     </ProtectedRouteProvider>
                 ),
             },

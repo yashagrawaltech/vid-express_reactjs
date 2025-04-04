@@ -53,12 +53,12 @@ const Sidebar = () => {
                 History
             </NavLink>
             <NavLink
-                to={'/playlist'}
+                to={'/subscriptions'}
                 className={({ isActive }) =>
                     `btn ${isActive ? 'btn-primary' : 'btn-soft'}`
                 }
             >
-                Playlist
+                Subscriptions
             </NavLink>
             <NavLink
                 to={'/studio'}

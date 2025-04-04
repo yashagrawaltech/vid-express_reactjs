@@ -11,6 +11,7 @@ import debug from 'debug';
 import healthcheckRoutes from '../routes/healthcheck.routes.js';
 import userRoutes from '../routes/user.routes.js';
 import videoRoutes from '../routes/video.routes.js';
+import subsRoutes from '../routes/subs.routes.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -53,6 +54,7 @@ if (
 app.use('/api/healthcheck', healthcheckRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/video', videoRoutes);
+app.use('/api/subs', subsRoutes);
 
 // Error Handler
 app.use(errorHandler);

@@ -8,6 +8,7 @@ import {
     checkIsUserValidForLogin,
 } from '../services/user.service.js';
 import { User } from '../models/user.model.js';
+import { Subscription } from '../models/subscription.model.js';
 
 export const registerUser = asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -208,6 +209,23 @@ export const getUserProfileByUserId = asyncHandler(async (req, res, next) => {
     return res.status(statusCodes.OK).json(
         new ApiResponse(statusCodes.OK, '', {
             user,
+        })
+    );
+});
+
+export const getSubscriptions = asyncHandler(async (req, res, next) => {
+    const subs = await Subscription.find({
+        subscriber: req.user._id,
+    }).populate('channel');
+
+    if (!subs)
+        return next(
+            new ApiError(statusCodes.NO_CONTENT, 'subscription not found')
+        );
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            subs,
         })
     );
 });

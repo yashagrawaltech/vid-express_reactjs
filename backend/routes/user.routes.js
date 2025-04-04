@@ -8,6 +8,7 @@ import {
     getUserProfileByUserId,
     clearWatchHistory,
     editUserProfile,
+    getSubscriptions,
 } from '../controllers/user.controller.js';
 import {
     userSignInValidator,
@@ -43,6 +44,7 @@ router.post(
 router.get('/', protectedRoute, getUserProfile);
 router.get('/watch-history', protectedRoute, getWatchHistory);
 router.get('/videos', protectedRoute, getUserVideos);
+router.get('/subs', protectedRoute, getSubscriptions);
 router.get('/:id', getUserProfileByUserId);
 
 export default router;
