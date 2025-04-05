@@ -80,6 +80,10 @@ const SigninForm = () => {
                         type="soft-style"
                     />
                 )}
+                <span className="text-xs text-yellow-400/70">
+                    uses (email: test@test.com) & (password: 87654321) for demo
+                    use
+                </span>
                 <label className="fieldset-label">Email</label>
                 <input
                     type="email"
