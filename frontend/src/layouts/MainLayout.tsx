@@ -16,9 +16,12 @@ const MainLayout = () => {
         }
     );
 
-    const mainClasses = clsx('w-full col-span-12 h-full overflow-y-auto z-10', {
-        'md:col-span-10': showSideBar,
-    });
+    const mainClasses = clsx(
+        'w-full col-span-12 h-full overflow-y-auto z-10 bg-base-300',
+        {
+            'md:col-span-10': showSideBar,
+        }
+    );
 
     return (
         <div className="w-dvw h-dvh flex flex-col overflow-hidden">

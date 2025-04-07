@@ -14,10 +14,18 @@ type ErrorResponse = {
     message: string;
 };
 
+const MAX_THUMBNAIL_SIZE = 2 * 1024 * 1024; // 2 MB
+const MAX_VIDEO_SIZE = 10 * 1024 * 1024; // 10 MB
+
 const DataSchema = z.object({
-    video: z.instanceof(File).refine((file) => file.size > 0, {
-        message: 'Video file is required',
-    }),
+    video: z
+        .instanceof(File)
+        .refine((file) => file.size > 0, {
+            message: 'Video file is required',
+        })
+        .refine((file) => file.size <= MAX_VIDEO_SIZE, {
+            message: `Video file must be less than ${MAX_VIDEO_SIZE / (1024 * 1024)} MB`,
+        }),
     title: z
         .string()
         .min(1, { message: 'Title is required' })
@@ -25,9 +33,14 @@ const DataSchema = z.object({
     description: z.string().max(500, {
         message: 'Description must be at most 500 characters long',
     }),
-    thumbnail: z.instanceof(File).refine((file) => file.size > 0, {
-        message: 'Thumbnail file is required',
-    }),
+    thumbnail: z
+        .instanceof(File)
+        .refine((file) => file.size > 0, {
+            message: 'Thumbnail file is required',
+        })
+        .refine((file) => file.size <= MAX_THUMBNAIL_SIZE, {
+            message: `Thumbnail file must be less than ${MAX_THUMBNAIL_SIZE / (1024 * 1024)} MB`,
+        }),
 });
 
 const Post = () => {
@@ -183,6 +196,9 @@ const Post = () => {
                         name="thumbnail"
                         accept="image/*"
                     />
+                    <span className="text-yellow-400/70">
+                        maximum file size allowed: 2mb
+                    </span>
                 </fieldset>
 
                 {/* Video */}
@@ -196,6 +212,9 @@ const Post = () => {
                         name="video"
                         accept="video/*"
                     />
+                    <span className="text-yellow-400/70">
+                        maximum file size allowed: 10mb
+                    </span>
                 </fieldset>
 
                 <span className="w-full mt-4 flex">

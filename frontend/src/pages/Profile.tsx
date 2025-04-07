@@ -129,14 +129,19 @@ const Profile = () => {
 
     return (
         <div className="w-full p-4 flex flex-col gap-4">
-            <div className="cover-image w-full h-48 bg-primary-content rounded-md overflow-hidden">
-                <img
-                    className="w-full h-full object-cover object-center"
-                    src={coverImage}
-                    alt="cover-image"
-                />
-            </div>
-            <div className="avatar avatar-placeholder w-full flex justify-center -mt-16">
+            {coverImage ? (
+                <div className="cover-image w-full h-48 bg-primary-content rounded-md overflow-hidden">
+                    <img
+                        className="w-full h-full object-cover object-center"
+                        src={coverImage}
+                        alt="cover-image"
+                    />
+                </div>
+            ) : null}
+
+            <div
+                className={`avatar avatar-placeholder w-full flex justify-center ${coverImage ? '-mt-16' : ''}`}
+            >
                 <div className="bg-primary text-neutral-content w-24 rounded-full border-2 shadow-md">
                     {avatar ? (
                         <img

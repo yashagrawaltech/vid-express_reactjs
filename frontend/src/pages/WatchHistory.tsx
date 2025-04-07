@@ -1,27 +1,51 @@
 import useFetch from '../hooks/useFetch';
 import { Video, WatchHistoryResponse } from '../utils/types';
 import { NoVideoCard, VideoCardSide } from '../components/VideoCard';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ErrorComponent } from '../components/Error';
+import { useLRUCacheContext } from '../context/LRUCacheContext';
 
 const WatchHistory = () => {
     const [videoArr, setVideoArr] = useState<Video[] | []>([]);
+
+    const { data: cachedData } = useLRUCacheContext<WatchHistoryResponse>();
 
     const {
         data: videoData,
         error,
         loading,
     } = useFetch<WatchHistoryResponse>(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/watch-history`
+        !cachedData || !cachedData.get('whVideoCache')
+            ? `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/watch-history`
+            : null
     );
 
-    useEffect(() => {
-        if (videoData && videoData.data && videoData.data.watchHistory) {
-            setVideoArr(videoData.data.watchHistory);
-        } else {
-            setVideoArr([]);
+    const setVideos = useCallback(() => {
+        if (cachedData) {
+            const whVideoCache = cachedData.get('whVideoCache');
+            if (whVideoCache) {
+                // console.log('cachedData: ', whVideoCache);
+                const videos = whVideoCache.data.watchHistory ?? [];
+                setVideoArr(videos);
+            }
         }
-    }, [videoData]);
+    }, [cachedData]);
+
+    useEffect(() => {
+        if (videoData) {
+            // console.log('apiData: ', videoData);
+            if (cachedData) {
+                cachedData.put('whVideoCache', videoData);
+                setVideos();
+            }
+        }
+    }, [videoData, cachedData, setVideos]);
+
+    useEffect(() => {
+        if (cachedData) {
+            setVideos();
+        }
+    }, [cachedData, setVideos]);
 
     return (
         <div className="grid grid-cols-9 p-4 gap-4">

@@ -1,27 +1,52 @@
 import useFetch from '../hooks/useFetch';
 import { Video, VideoResponse } from '../utils/types';
 import VideoCard, { NoVideoCard } from '../components/VideoCard';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ErrorComponent } from '../components/Error';
+import { useLRUCacheContext } from '../context/LRUCacheContext';
 
 const Studio = () => {
     const [videoArr, setVideoArr] = useState<Video[] | []>([]);
+
+    const { data: cachedData } = useLRUCacheContext<VideoResponse>();
+    // console.log(cachedData);
 
     const {
         data: videoData,
         error,
         loading,
     } = useFetch<VideoResponse>(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/videos`
+        !cachedData || !cachedData.get('studioVideoCache')
+            ? `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/videos`
+            : null
     );
 
-    useEffect(() => {
-        if (videoData && videoData.data && videoData.data.videos) {
-            setVideoArr(videoData.data.videos);
-        } else {
-            setVideoArr([]);
+    const setVideos = useCallback(() => {
+        if (cachedData) {
+            const studioVideoCache = cachedData.get('studioVideoCache');
+            if (studioVideoCache) {
+                // console.log('cachedData: ', studioVideoCache);
+                const videos = studioVideoCache.data.videos ?? [];
+                setVideoArr(videos);
+            }
         }
-    }, [videoData]);
+    }, [cachedData]);
+
+    useEffect(() => {
+        if (videoData) {
+            // console.log('apiData: ', videoData);
+            if (cachedData) {
+                cachedData.put('studioVideoCache', videoData);
+                setVideos();
+            }
+        }
+    }, [videoData, cachedData, setVideos]);
+
+    useEffect(() => {
+        if (cachedData) {
+            setVideos();
+        }
+    }, [cachedData, setVideos]);
 
     return (
         <div className="flex flex-col p-4 gap-4">
