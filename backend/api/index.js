@@ -23,7 +23,7 @@ export const devlog =
         : () => {};
 
 // DB Config
-connectToMongoDB(`${process.env.MONGODB_URI}/${process.env.DB_NAME}`);
+connectToMongoDB();
 
 // Common Middlewares
 app.use(express.json());
