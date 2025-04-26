@@ -5,7 +5,7 @@ import { ApiError } from '../utils/ApiError.js';
 export const saveUser = async ({ email, password, fullName }) => {
     if (!email || !password || !fullName)
         throw new Error(
-            'required field are not there for saving the user in the database'
+            'required fields are not provided for saving the user in the database'
         );
 
     const isUserAlreadyRegistered = await User.findOne({ email });
@@ -22,7 +22,7 @@ export const saveUser = async ({ email, password, fullName }) => {
             'error saving the user in the database'
         );
 
-    const savedUser = await User.findById(user._id);
+    const savedUser = await User.findOne({ email });
     if (!savedUser)
         throw new ApiError(
             statusCodes.INTERNAL_SERVER_ERROR,
@@ -42,21 +42,21 @@ export const saveUser = async ({ email, password, fullName }) => {
 export const checkIsUserValidForLogin = async ({ email, password }) => {
     if (!email || !password)
         throw new Error(
-            'required field are not there for validating the user for login'
+            'required fields are not provided for validating the user for login'
         );
 
     const user = await User.findOne({ email }).select('+password');
     if (!user)
         throw new ApiError(
             statusCodes.BAD_REQUEST,
-            'email or password is incorect'
+            'Email or password is wrong'
         );
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect)
         throw new ApiError(
             statusCodes.BAD_REQUEST,
-            'email or password is incorect'
+            'Email or password is wrong'
         );
 
     const token = user.generateAuthToken();

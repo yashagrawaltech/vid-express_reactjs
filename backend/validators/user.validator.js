@@ -21,9 +21,11 @@ export const userPasswordValidator = [
     body('oldPassword', 'Old password is wrong').isLength({
         min: 6,
     }),
-    body('password', 'The minimum password length is 6 characters').isLength({
-        min: 6,
-    }),
+    body('newPassword', 'The minimum password length is 6 characters').isLength(
+        {
+            min: 6,
+        }
+    ),
 ];
 
 export const editProfileValidator = [

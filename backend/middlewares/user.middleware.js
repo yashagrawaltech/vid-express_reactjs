@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 export const protectedRoute = asyncHandler(async (req, res, next) => {
     const token =
-        req.cookies?.authToken || req.headers['authToken']?.split(' ')[1];
+        req.cookies?.authToken || req.headers['Authorization']?.split(' ')[1];
 
     if (!token)
         return next(

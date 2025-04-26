@@ -17,7 +17,6 @@ const app = express();
 const PORT = process.env.PORT ?? 3001;
 
 // Debugger
-// console.log(process.env.NODE_ENV, process.env.DEBUG)
 export const devlog =
     process.env.NODE_ENV === 'development'
         ? debug('development:app')

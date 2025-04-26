@@ -9,6 +9,8 @@ import {
     clearWatchHistory,
     editUserProfile,
     getSubscriptions,
+    getWatchHistory,
+    getUserVideos,
 } from '../controllers/user.controller.js';
 import {
     userSignInValidator,
@@ -17,10 +19,6 @@ import {
     editProfileValidator,
 } from '../validators/user.validator.js';
 import { protectedRoute } from '../middlewares/user.middleware.js';
-import {
-    getUserVideos,
-    getWatchHistory,
-} from '../controllers/video.controller.js';
 
 const router = Router();
 

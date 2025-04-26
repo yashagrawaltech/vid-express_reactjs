@@ -9,6 +9,7 @@ import {
 } from '../services/user.service.js';
 import { User } from '../models/user.model.js';
 import { Subscription } from '../models/subscription.model.js';
+import mongoose from 'mongoose';
 
 export const registerUser = asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -89,40 +90,38 @@ export const editUserProfile = asyncHandler(async (req, res, next) => {
         );
     }
 
+    if (Object.keys(req?.query).length < 1) {
+        return res.json(
+            new ApiResponse(statusCodes.OK, 'profile updated successfuly', {
+                user: req.user,
+            })
+        );
+    }
+
     const {
         username: usernameQuery,
-        fullName: fullNamequery,
+        fullName: fullNameQuery,
         bio: bioQuery,
     } = req.query;
-
-    // if (!usernameQuery && !fullNamequery) {
-    //     return next(
-    //         new ApiError(
-    //             statusCodes.CONFLICT,
-    //             `query parameters are required for profile update`
-    //         )
-    //     );
-    // }
 
     const user = await User.findById(req.user._id);
 
     if (usernameQuery) {
         const { username } = req.body;
         user.username = username;
-        await user.save();
     }
 
-    if (fullNamequery) {
+    if (fullNameQuery) {
         const { fullName } = req.body;
         user.fullName = fullName;
-        await user.save();
     }
 
     if (bioQuery) {
         const { bio } = req.body;
         user.bio = bio;
-        await user.save();
     }
+
+    await user.save();
 
     return res.json(
         new ApiResponse(statusCodes.OK, 'profile updated successfuly', {
@@ -154,7 +153,7 @@ export const changeUserPassword = asyncHandler(async (req, res, next) => {
         );
     }
 
-    const { oldPassword, password } = req.body;
+    const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user._id).select('+password');
 
@@ -166,7 +165,7 @@ export const changeUserPassword = asyncHandler(async (req, res, next) => {
             'Old password is incorect'
         );
 
-    user.password = password;
+    user.password = newPassword;
     await user.save();
 
     return res
@@ -202,6 +201,10 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
 export const getUserProfileByUserId = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
+    if (!mongoose.isValidObjectId(id)) {
+        return next(new ApiError(statusCodes.BAD_REQUEST, 'user not found'));
+    }
+
     const user = await User.findById(id);
     if (!user)
         return next(new ApiError(statusCodes.BAD_REQUEST, 'user not found'));
@@ -226,6 +229,38 @@ export const getSubscriptions = asyncHandler(async (req, res, next) => {
     return res.status(statusCodes.OK).json(
         new ApiResponse(statusCodes.OK, '', {
             subs,
+        })
+    );
+});
+
+export const getWatchHistory = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate({
+        path: 'watchHistory',
+        populate: {
+            path: 'owner',
+        },
+    });
+    const watchHistory = user.watchHistory;
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            watchHistory,
+        })
+    );
+});
+
+export const getUserVideos = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user._id).populate({
+        path: 'videos',
+        populate: {
+            path: 'owner',
+        },
+    });
+    const videos = user.videos;
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            videos,
         })
     );
 });
