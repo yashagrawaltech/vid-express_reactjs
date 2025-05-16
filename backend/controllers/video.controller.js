@@ -140,9 +140,21 @@ export const searchVideosByQuery = asyncHandler(async (req, res, next) => {
 export const deleteVideo = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
-    const video = await Video.findByIdAndDelete(id);
+    if (!mongoose.isValidObjectId(id)) {
+        return next(new ApiError(statusCodes.BAD_REQUEST, 'video not found'));
+    }
+
+    const video = await Video.findById(id);
     if (!video)
         return next(new ApiError(statusCodes.BAD_REQUEST, 'video not found'));
+
+    if (video.owner.toString() !== req.user._id.toString()) {
+        return next(
+            new ApiError(statusCodes.BAD_REQUEST, 'unauthorized action')
+        );
+    }
+
+    await video.deleteOne();
 
     await User.findByIdAndUpdate(req.user._id, {
         $pull: { videos: video._id },

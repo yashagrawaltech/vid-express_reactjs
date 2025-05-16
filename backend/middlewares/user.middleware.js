@@ -20,7 +20,7 @@ export const protectedRoute = asyncHandler(async (req, res, next) => {
             new ApiError(statusCodes.UNAUTHORIZED, 'unauthorized access')
         );
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate('videos watchHistory');
 
     if (!user)
         return next(
