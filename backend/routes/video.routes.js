@@ -4,15 +4,15 @@ import {
     uploadVideo,
     getVideo,
     deleteVideo,
-    getAllVideo,
-    search,
-    searchVideos,
+    getVideos,
+    searchVideosByQuery,
 } from '../controllers/video.controller.js';
 import {
     protectedRoute,
     unProtectedRoute,
 } from '../middlewares/user.middleware.js';
 import { videoPostValidator } from '../validators/video.validator.js';
+import { handleValidationErrors } from '../middlewares/commonMiddlewares.js';
 
 const router = Router();
 const uploads = upload.fields([
@@ -20,13 +20,18 @@ const uploads = upload.fields([
     { name: 'thumbnail', maxCount: 1 },
 ]);
 
-router.post('/post', protectedRoute, uploads, videoPostValidator, uploadVideo);
+router.post(
+    '/upload',
+    protectedRoute,
+    uploads,
+    videoPostValidator,
+    handleValidationErrors,
+    uploadVideo
+);
 
-router.get('/', getAllVideo);
+router.get('/', getVideos);
+router.get('/search', searchVideosByQuery);
 router.get('/:id', unProtectedRoute, getVideo);
-router.get('/search/:key', search);
-
-router.get('/search-videos/:key', searchVideos);
 
 router.delete('/:id', protectedRoute, deleteVideo);
 

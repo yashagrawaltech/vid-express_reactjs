@@ -1,6 +1,5 @@
 import { statusCodes } from '../constants.js';
 import { asyncHandler } from '../handlers/asyncHandler.js';
-import { validationResult } from 'express-validator';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {
@@ -12,17 +11,6 @@ import { Subscription } from '../models/subscription.model.js';
 import mongoose from 'mongoose';
 
 export const registerUser = asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new ApiError(
-                statusCodes.CONFLICT,
-                `${errors.array()[0].msg}`,
-                errors.array()
-            )
-        );
-    }
-
     const { email, fullName, password } = req.body;
 
     const { user, token } = await saveUser({ email, fullName, password });
@@ -48,17 +36,6 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 });
 
 export const loginUser = asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new ApiError(
-                statusCodes.CONFLICT,
-                `${errors.array()[0].msg}`,
-                errors.array()
-            )
-        );
-    }
-
     const { email, password } = req.body;
 
     const { user, token } = await checkIsUserValidForLogin({ email, password });
@@ -79,17 +56,6 @@ export const loginUser = asyncHandler(async (req, res, next) => {
 });
 
 export const editUserProfile = asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new ApiError(
-                statusCodes.CONFLICT,
-                `${errors.array()[0].msg}`,
-                errors.array()
-            )
-        );
-    }
-
     if (Object.keys(req?.query).length < 1) {
         return res.json(
             new ApiResponse(statusCodes.OK, 'profile updated successfuly', {
@@ -142,17 +108,6 @@ export const logoutUser = asyncHandler(async (req, res, next) => {
 });
 
 export const changeUserPassword = asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new ApiError(
-                statusCodes.CONFLICT,
-                `${errors.array()[0].msg}`,
-                errors.array()
-            )
-        );
-    }
-
     const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user._id).select('+password');

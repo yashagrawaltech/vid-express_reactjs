@@ -15,7 +15,7 @@ const Search = () => {
         error,
         loading,
     } = useFetch<VideoResponse>(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/search-videos/${key}`
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video?key=${key}`
     );
 
     useEffect(() => {

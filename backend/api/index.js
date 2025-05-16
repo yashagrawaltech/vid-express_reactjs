@@ -8,7 +8,7 @@ import { errorHandler } from '../handlers/errorHandler.js';
 import debug from 'debug';
 
 // Routers
-import healthcheckRoutes from '../routes/healthcheck.routes.js';
+import healthRoutes from '../routes/health.routes.js';
 import userRoutes from '../routes/user.routes.js';
 import videoRoutes from '../routes/video.routes.js';
 import subsRoutes from '../routes/subs.routes.js';
@@ -50,7 +50,7 @@ if (
 }
 
 // Routes
-app.use('/api/healthcheck', healthcheckRoutes);
+app.use('/api/health', healthRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/subs', subsRoutes);

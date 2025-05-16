@@ -1,4 +1,3 @@
-import { validationResult } from 'express-validator';
 import { statusCodes } from '../constants.js';
 import { asyncHandler } from '../handlers/asyncHandler.js';
 import { User } from '../models/user.model.js';
@@ -6,19 +5,9 @@ import { Video } from '../models/video.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import cloudinary, { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import mongoose from 'mongoose';
 
 export const uploadVideo = asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new ApiError(
-                statusCodes.CONFLICT,
-                `${errors.array()[0].msg}`,
-                errors.array()
-            )
-        );
-    }
-
     const { title, description } = req.body;
     const { video, thumbnail } = req.files;
 
@@ -42,150 +31,125 @@ export const uploadVideo = asyncHandler(async (req, res, next) => {
         );
     }
 
-    const user = await User.findById(req.user._id);
-
     const videoObj = await Video.insertOne({
         title,
         description,
         thumbnail: thumbnailResponse.secure_url,
         url: videoResponse.secure_url,
-        owner: user._id,
+        owner: req.user._id,
         video_public_id: videoResponse.public_id,
         thumbnail_public_id: thumbnailResponse.public_id,
     });
 
-    user.videos.push(videoObj._id);
-    await user.save();
+    req.user.videos.push(videoObj._id);
+    await req.user.save();
 
     return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            videoObj,
+        new ApiResponse(statusCodes.OK, 'video uploaded successfully', {
+            video: videoObj,
         })
     );
 });
 
-export const getAllVideo = asyncHandler(async (req, res, next) => {
-    const videos = await Video.find({}).populate('owner');
+export const getVideos = asyncHandler(async (req, res, next) => {
+    const { key } = req.query;
+
+    const videos = key
+        ? await Video.find({
+              title: {
+                  $regex: `^${decodeURIComponent(key).replace(/"/g, '')}`,
+                  $options: 'i',
+              }, // 'i' for case-insensitive search
+          })
+        : await Video.find().populate('owner');
+
     if (!videos)
         return next(
             new ApiError(statusCodes.BAD_REQUEST, 'no videos are available')
         );
 
     return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
+        new ApiResponse(statusCodes.OK, 'videos fetched successfully', {
             videos,
-        })
-    );
-});
-
-export const likeVideo = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.user._id).populate({
-        path: 'videos',
-        populate: {
-            path: 'owner',
-        },
-    });
-    const videos = user.videos;
-
-    return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            videos,
-        })
-    );
-});
-
-export const search = asyncHandler(async (req, res, next) => {
-    const key = req.params.key;
-
-    if (!key) {
-        return res.status(statusCodes.OK).json(
-            new ApiResponse(statusCodes.OK, '', {
-                results: [],
-            })
-        );
-    }
-
-    const results = await Video.find({
-        title: { $regex: `^${key}`, $options: 'i' }, // 'i' for case-insensitive search
-    }).select('title _id');
-
-    return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            results,
-        })
-    );
-});
-
-export const searchVideos = asyncHandler(async (req, res, next) => {
-    const key = req.params.key;
-
-    if (!key) {
-        return res.status(statusCodes.OK).json(
-            new ApiResponse(statusCodes.OK, '', {
-                results: [],
-            })
-        );
-    }
-
-    const results = await Video.find({
-        title: { $regex: `^${key}`, $options: 'i' }, // 'i' for case-insensitive search
-    });
-
-    return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            videos: results,
         })
     );
 });
 
 export const getVideo = asyncHandler(async (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+        return next(new ApiError(statusCodes.BAD_REQUEST, 'video not found'));
+    }
 
     const video = await Video.findById(id).populate('owner');
     if (!video)
-        return next(
-            new ApiError(statusCodes.BAD_REQUEST, 'video is not available')
-        );
+        return next(new ApiError(statusCodes.BAD_REQUEST, 'video not found'));
 
     video.views = video.views + 1;
     await video.save();
 
     if (req.user && req.user._id) {
-        const user = await User.findById(req.user._id);
-
-        const idIndex = user.watchHistory.indexOf(video._id);
+        const idIndex = req.user.watchHistory.indexOf(video._id);
 
         if (idIndex !== -1) {
             // ID exists, remove it
-            user.watchHistory.splice(idIndex, 1);
+            req.user.watchHistory.splice(idIndex, 1);
         }
 
-        user.watchHistory.push(video._id);
-        await user.save();
+        req.user.watchHistory.push(video._id);
+        await req.user.save();
     }
 
     return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
+        new ApiResponse(statusCodes.OK, 'video fetched successfully', {
             video,
         })
     );
 });
 
+export const searchVideosByQuery = asyncHandler(async (req, res, next) => {
+    const { key } = req.query;
+
+    if (!key) {
+        return res.status(statusCodes.OK).json(
+            new ApiResponse(
+                statusCodes.OK,
+                'search results fetched successfully',
+                {
+                    results: [],
+                }
+            )
+        );
+    }
+
+    const results = await Video.find({
+        title: {
+            $regex: `^${decodeURIComponent(key).replace(/"/g, '')}`,
+            $options: 'i',
+        }, // 'i' for case-insensitive search
+    }).select('title _id');
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, 'search results fetched successfully', {
+            results,
+        })
+    );
+});
+
 export const deleteVideo = asyncHandler(async (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     const video = await Video.findByIdAndDelete(id);
     if (!video)
-        return next(
-            new ApiError(statusCodes.BAD_REQUEST, 'video is not available')
-        );
+        return next(new ApiError(statusCodes.BAD_REQUEST, 'video not found'));
 
     await User.findByIdAndUpdate(req.user._id, {
         $pull: { videos: video._id },
     });
 
-    await cloudinary.v2.uploader.destroy(video.video_public_id);
-    await cloudinary.v2.uploader.destroy(video.thumbnail_public_id);
+    await cloudinary.uploader.destroy(video.video_public_id);
+    await cloudinary.uploader.destroy(video.thumbnail_public_id);
 
     return res
         .status(statusCodes.OK)

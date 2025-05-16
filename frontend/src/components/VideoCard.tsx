@@ -126,10 +126,10 @@ export const NoVideoCard = () => {
                     />{' '}
                     {/* Sad Mouth */}
                 </svg>
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-xl font-semibold text-white text-center">
                     No Video Available
                 </h2>
-                <p className="text-gray-300 mt-2">
+                <p className="text-gray-300 mt-2 text-center">
                     It seems there are no videos available at the moment. Please
                     check back later.
                 </p>

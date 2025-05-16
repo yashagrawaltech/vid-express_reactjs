@@ -48,10 +48,10 @@ export const ErrorComponent: FC<{
                     />{' '}
                     {/* Frustrated Mouth */}
                 </svg>
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-xl font-semibold text-white text-center">
                     Something Went Wrong
                 </h2>
-                <p className="text-gray-300 mt-2">
+                <p className="text-gray-300 mt-2 text-center">
                     {error
                         ? error
                         : 'We encountered an error while trying to process your request. Please try again later.'}

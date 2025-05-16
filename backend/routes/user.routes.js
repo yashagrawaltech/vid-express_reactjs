@@ -19,23 +19,32 @@ import {
     editProfileValidator,
 } from '../validators/user.validator.js';
 import { protectedRoute } from '../middlewares/user.middleware.js';
+import { handleValidationErrors } from '../middlewares/commonMiddlewares.js';
 
 const router = Router();
 
-router.post('/signup', userSignUpValidator, registerUser);
-router.post('/signin', userSignInValidator, loginUser);
-router.post('/signout', logoutUser);
 router.post(
+    '/signup',
+    userSignUpValidator,
+    handleValidationErrors,
+    registerUser
+);
+router.post('/signin', userSignInValidator, handleValidationErrors, loginUser);
+router.post('/signout', logoutUser);
+
+router.patch('/clear-watch-history', protectedRoute, clearWatchHistory);
+router.patch(
     '/change-password',
     protectedRoute,
     userPasswordValidator,
+    handleValidationErrors,
     changeUserPassword
 );
-router.post('/clear-watch-history', protectedRoute, clearWatchHistory);
-router.post(
+router.patch(
     '/edit-profile',
     protectedRoute,
     editProfileValidator,
+    handleValidationErrors,
     editUserProfile
 );
 

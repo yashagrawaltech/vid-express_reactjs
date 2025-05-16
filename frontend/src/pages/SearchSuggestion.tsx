@@ -33,7 +33,7 @@ const SearchSuggestion = () => {
         try {
             if (e.currentTarget.value) {
                 const response = await axios.get<SearchResponse>(
-                    `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/search/${e.currentTarget.value}`,
+                    `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/search?key=${e.currentTarget.value}`,
                     {
                         withCredentials: true,
                     }
