@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { devlog } from '../api/index.js';
 import { statusCodes } from '../constants.js';
 import { asyncHandler } from '../handlers/asyncHandler.js';
@@ -11,35 +12,49 @@ export const addSubscription = asyncHandler(async (req, res, next) => {
 
     devlog(id);
 
-    const channel = await User.findById(id);
-
-    if (!channel)
-        return next(new ApiError(statusCodes.CONFLICT, `invalid client id`));
-
-    const isAlreadyExists = await Subscription.findOne({
-        channel: channel._id,
-    });
-
-    if (isAlreadyExists) {
-        return next(new ApiError(statusCodes.CONFLICT, `already a subscriber`));
+    if (!mongoose.isValidObjectId(id)) {
+        return next(new ApiError(statusCodes.BAD_REQUEST, 'channel not found'));
     }
 
-    const subs = await Subscription.create({
-        subscriber: req.user._id,
-        channel: channel._id,
-    });
+    if (id === req.user._id.toString()) {
+        return next(
+            new ApiError(
+                statusCodes.BAD_REQUEST,
+                'user cannot subscribe own channel'
+            )
+        );
+    }
 
-    if (!subs)
+    const channel = await User.findById(id);
+
+    if (!channel) {
+        return next(new ApiError(statusCodes.CONFLICT, `invalid client id`));
+    }
+
+    const subscription = await Subscription.findOneAndUpdate(
+        {
+            subscriber: req.user._id,
+            channel: channel._id,
+        },
+        {
+            subscriber: req.user._id,
+            channel: channel._id,
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+
+    if (!subscription) {
         return next(
             new ApiError(
                 statusCodes.INTERNAL_SERVER_ERROR,
                 `subscription request failed`
             )
         );
+    }
 
     return res.json(
         new ApiResponse(statusCodes.OK, 'subscription added successfully', {
-            subs,
+            subscription,
         })
     );
 });
@@ -47,15 +62,13 @@ export const addSubscription = asyncHandler(async (req, res, next) => {
 export const deleteSubscription = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
-    const channel = await User.findById(id);
+    if (!mongoose.isValidObjectId(id)) {
+        return next(
+            new ApiError(statusCodes.BAD_REQUEST, 'subscription not found')
+        );
+    }
 
-    if (!channel)
-        return next(new ApiError(statusCodes.CONFLICT, `invalid client id`));
-
-    const subs = await Subscription.deleteOne({
-        subscriber: req.user._id,
-        channel: channel._id,
-    });
+    const subs = await Subscription.findByIdAndDelete(id);
 
     if (!subs)
         return next(

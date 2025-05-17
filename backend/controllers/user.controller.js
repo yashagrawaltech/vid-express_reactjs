@@ -70,29 +70,25 @@ export const editUserProfile = asyncHandler(async (req, res, next) => {
         bio: bioQuery,
     } = req.query;
 
-    const user = await User.findById(req.user._id);
-
     if (usernameQuery) {
         const { username } = req.body;
-        user.username = username;
+        req.user.username = username;
     }
 
     if (fullNameQuery) {
         const { fullName } = req.body;
-        user.fullName = fullName;
+        req.user.fullName = fullName;
     }
 
     if (bioQuery) {
         const { bio } = req.body;
-        user.bio = bio;
+        req.user.bio = bio;
     }
 
-    await user.save();
+    await req.user.save();
 
     return res.json(
-        new ApiResponse(statusCodes.OK, 'profile updated successfuly', {
-            user,
-        })
+        new ApiResponse(statusCodes.OK, 'profile updated successfuly')
     );
 });
 
@@ -117,7 +113,7 @@ export const changeUserPassword = asyncHandler(async (req, res, next) => {
     if (!isValidPassword)
         throw new ApiError(
             statusCodes.UNAUTHORIZED,
-            'Old password is incorect'
+            'old password is incorect'
         );
 
     user.password = newPassword;
@@ -129,10 +125,8 @@ export const changeUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 export const clearWatchHistory = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.user._id);
-
-    user.watchHistory = [];
-    await user.save();
+    req.user.watchHistory = [];
+    await req.user.save();
 
     return res
         .status(statusCodes.OK)
@@ -145,10 +139,37 @@ export const clearWatchHistory = asyncHandler(async (req, res, next) => {
 });
 
 export const getUserProfile = asyncHandler(async (req, res, next) => {
-    const user = req.user;
     return res.status(statusCodes.OK).json(
         new ApiResponse(statusCodes.OK, '', {
-            user,
+            user: req.user,
+        })
+    );
+});
+
+export const getSubscriptions = asyncHandler(async (req, res, next) => {
+    const subs = await Subscription.find({
+        subscriber: req.user._id,
+    }).populate('channel');
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            subs,
+        })
+    );
+});
+
+export const getWatchHistory = asyncHandler(async (req, res, next) => {
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            watchHistory: req.user.watchHistory,
+        })
+    );
+});
+
+export const getUserVideos = asyncHandler(async (req, res, next) => {
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, '', {
+            videos: req.user.videos,
         })
     );
 });
@@ -167,55 +188,6 @@ export const getUserProfileByUserId = asyncHandler(async (req, res, next) => {
     return res.status(statusCodes.OK).json(
         new ApiResponse(statusCodes.OK, '', {
             user,
-        })
-    );
-});
-
-export const getSubscriptions = asyncHandler(async (req, res, next) => {
-    const subs = await Subscription.find({
-        subscriber: req.user._id,
-    }).populate('channel');
-
-    if (!subs)
-        return next(
-            new ApiError(statusCodes.NO_CONTENT, 'subscription not found')
-        );
-
-    return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            subs,
-        })
-    );
-});
-
-export const getWatchHistory = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.user._id).populate({
-        path: 'watchHistory',
-        populate: {
-            path: 'owner',
-        },
-    });
-    const watchHistory = user.watchHistory;
-
-    return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            watchHistory,
-        })
-    );
-});
-
-export const getUserVideos = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.user._id).populate({
-        path: 'videos',
-        populate: {
-            path: 'owner',
-        },
-    });
-    const videos = user.videos;
-
-    return res.status(statusCodes.OK).json(
-        new ApiResponse(statusCodes.OK, '', {
-            videos,
         })
     );
 });

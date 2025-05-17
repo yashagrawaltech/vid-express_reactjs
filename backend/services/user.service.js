@@ -4,7 +4,8 @@ import { ApiError } from '../utils/ApiError.js';
 
 export const saveUser = async ({ email, password, fullName }) => {
     if (!email || !password || !fullName)
-        throw new Error(
+        throw new ApiError(
+            statusCodes.BAD_REQUEST,
             'required fields are not provided for saving the user in the database'
         );
 
@@ -41,7 +42,8 @@ export const saveUser = async ({ email, password, fullName }) => {
 
 export const checkIsUserValidForLogin = async ({ email, password }) => {
     if (!email || !password)
-        throw new Error(
+        throw new ApiError(
+            statusCodes.BAD_REQUEST,
             'required fields are not provided for validating the user for login'
         );
 
