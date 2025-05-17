@@ -4,11 +4,13 @@ import { NoVideoCard, VideoCardSide } from '../components/VideoCard';
 import { useCallback, useEffect, useState } from 'react';
 import { ErrorComponent } from '../components/Error';
 import { useLRUCacheContext } from '../context/LRUCacheContext';
+import axios from 'axios';
 
 const WatchHistory = () => {
     const [videoArr, setVideoArr] = useState<Video[] | []>([]);
 
-    const { data: cachedData } = useLRUCacheContext<WatchHistoryResponse>();
+    const { data: cachedData } =
+        useLRUCacheContext<WatchHistoryResponse | null>();
 
     const {
         data: videoData,
@@ -47,6 +49,16 @@ const WatchHistory = () => {
         }
     }, [cachedData, setVideos]);
 
+    const clearWatchHistory = async () => {
+        await axios.patch(
+            `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/clear-watch-history`,
+            {},
+            { withCredentials: true }
+        );
+        setVideoArr([]);
+        cachedData?.put('whVideoCache', null);
+    };
+
     return (
         <div className="grid grid-cols-9 p-4 gap-4">
             <h1 className="text-2xl md:text-6xl col-span-9 font-bold mb-4">
@@ -72,7 +84,10 @@ const WatchHistory = () => {
                 ) : null}
             </div>
             <div className="options hidden lg:col-span-3 lg:flex flex-col gap-4">
-                <button className="btn btn-outline hover:btn-primary">
+                <button
+                    className="btn btn-outline hover:btn-primary"
+                    onClick={clearWatchHistory}
+                >
                     Clear all watch history
                 </button>
             </div>

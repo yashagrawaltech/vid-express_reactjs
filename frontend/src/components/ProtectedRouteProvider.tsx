@@ -1,18 +1,19 @@
-import { FC, ReactNode, useLayoutEffect } from 'react';
+import { FC, ReactNode } from 'react';
 import { useUser } from '../context/UserContext';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 export const ProtectedRouteProvider: FC<{ children: ReactNode }> = ({
     children,
 }) => {
     const { _id, loading } = useUser();
-    const navigate = useNavigate();
 
-    useLayoutEffect(() => {
-        if (!loading && !_id) {
-            navigate('/sign-in');
-        }
-    }, [_id, navigate, loading]);
+    if (loading) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <span className="loading loading-spinner text-primary"></span>
+            </div>
+        );
+    }
 
-    return <>{children}</>;
+    return _id ? children : <Navigate to={'/sign-in'} replace />;
 };

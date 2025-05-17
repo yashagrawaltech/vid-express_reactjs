@@ -60,6 +60,14 @@ const Post = () => {
 
         if (name === 'video' || name === 'thumbnail') {
             if (files && files.length > 0) {
+                if (name === 'thumbnail' && files[0].size > 5242880)
+                    return setError({
+                        message: 'thumbnail size must be less than 5 mb',
+                    });
+                if (name === 'video' && files[0].size > 10485760)
+                    return setError({
+                        message: 'video size must be less than 10 mb',
+                    });
                 setFormData((prev) => ({
                     ...prev,
                     [name]: files[0],
@@ -103,7 +111,7 @@ const Post = () => {
             formDataToSend.append('thumbnail', formData.thumbnail as File);
 
             const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/post`,
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/upload`,
                 formDataToSend,
                 { withCredentials: true }
             );
