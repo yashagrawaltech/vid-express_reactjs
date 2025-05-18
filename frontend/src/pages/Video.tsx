@@ -164,9 +164,7 @@ const VideoPage = () => {
                         <div className="left flex items-center  gap-2">
                             {subsStatusLoading ? (
                                 <span className="loading loading-dots loading-sm"></span>
-                            ) : subsData &&
-                              subsData.data &&
-                              subsData.data.isSubscribed ? (
+                            ) : (
                                 <button
                                     onClick={() => {
                                         return isSubscribed
@@ -200,7 +198,7 @@ const VideoPage = () => {
 
                                     {isSubscribed ? 'Subscribed' : 'Subscribe'}
                                 </button>
-                            ) : null}
+                            )}
                         </div>
                         {/* <div className="right">
                         <button className="btn btn-outline btn-primary text-neutral-content">
