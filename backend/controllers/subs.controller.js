@@ -82,3 +82,71 @@ export const deleteSubscription = asyncHandler(async (req, res, next) => {
         new ApiResponse(statusCodes.OK, 'subscription removed successfully')
     );
 });
+
+export const deleteSubscriptionByChannelId = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+
+        if (!mongoose.isValidObjectId(id)) {
+            return next(
+                new ApiError(statusCodes.BAD_REQUEST, 'subscription not found')
+            );
+        }
+
+        const channelData = await User.findById(id);
+
+        if (!channelData) {
+            return next(
+                new ApiError(statusCodes.CONFLICT, `invalid client id`)
+            );
+        }
+
+        devlog(channelData);
+
+        const subs = await Subscription.findOneAndDelete({
+            channel: channelData._id,
+            subscriber: req.user._id,
+        });
+
+        if (!subs)
+            return next(
+                new ApiError(
+                    statusCodes.INTERNAL_SERVER_ERROR,
+                    `subscription remove request failed`
+                )
+            );
+
+        return res.json(
+            new ApiResponse(statusCodes.OK, 'subscription removed successfully')
+        );
+    }
+);
+
+export const checkSubscription = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+        return next(
+            new ApiError(statusCodes.BAD_REQUEST, 'subscription not found')
+        );
+    }
+
+    const channel = await User.findById(id);
+
+    if (!channel) {
+        return next(new ApiError(statusCodes.CONFLICT, `invalid client id`));
+    }
+
+    const subs = await Subscription.findOne({
+        subscriber: req.user._id,
+        channel: channel._id,
+    });
+
+    return res.json(
+        new ApiResponse(
+            statusCodes.OK,
+            'subscription status fetched successfully',
+            { isSubscribed: Boolean(subs && subs._id) }
+        )
+    );
+});

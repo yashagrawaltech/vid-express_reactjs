@@ -64,6 +64,15 @@ export interface Subs {
     channel: User;
 }
 
+export interface SubsStatusResponse {
+    statusCode: number;
+    success: boolean;
+    data: {
+        isSubscribed: boolean;
+    };
+    message: string;
+}
+
 export interface SubsResponse {
     statusCode: number;
     success: boolean;

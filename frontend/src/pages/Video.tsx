@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import {
     SignleVideoResponse,
-    SubsResponse,
+    SubsStatusResponse,
     VideoResponse,
 } from '../utils/types';
 import Error, { ErrorComponent } from '../components/Error';
@@ -21,16 +21,13 @@ const VideoPage = () => {
 
     const [isSubscribed, setIsSubscribed] = useState(false);
 
-    const { data: subsData } = useFetch<SubsResponse>(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/subs`
+    const { data: subsData } = useFetch<SubsStatusResponse>(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/subs/status/${data?.data.video.owner._id}`
     );
 
     useEffect(() => {
-        if (subsData && subsData.data && subsData.data.subs) {
-            const isSubs = subsData.data.subs.some(
-                (s) => s.channel._id === data?.data.video.owner._id
-            );
-            if (isSubs) setIsSubscribed(true);
+        if (subsData && subsData.data && subsData.data.isSubscribed) {
+            setIsSubscribed(true);
         }
     }, [subsData, data]);
 
@@ -48,7 +45,7 @@ const VideoPage = () => {
         setIsSubscribed(false);
         try {
             const response = await axios.delete(
-                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/subs/${id}`,
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/subs/unsubscribe/${id}`,
                 { withCredentials: true }
             );
             if (response && response.status !== 200) {
@@ -67,7 +64,7 @@ const VideoPage = () => {
         setIsSubscribed(true);
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/subs/${id}/subscribe`,
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/subs/${id}`,
                 {}, // Send an empty object or any required data in the body
                 { withCredentials: true } // Pass the config object here
             );
