@@ -12,12 +12,12 @@ const DataSchema = z.object({
 const PasswordDataSchema = z
     .object({
         oldPassword: z.string(),
-        password: z
+        newPassword: z
             .string()
             .min(8, 'Password must be at least 8 characters long'),
         confirmPassword: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((data) => data.newPassword === data.confirmPassword, {
         message: "Passwords don't match",
         path: ['confirmPassword'],
     });
@@ -106,7 +106,7 @@ const Profile = () => {
         }
 
         try {
-            await axios.post(
+            await axios.patch(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/edit-profile?username=true&fullName=true&bio=true`,
                 formData,
                 { withCredentials: true }
@@ -310,7 +310,7 @@ const ForgotPasswordModal: React.FC<{
 
     const [forgotPasswordformData, setForgotPasswordformData] = useState({
         oldPassword: '',
-        password: '',
+        newPassword: '',
         confirmPassword: '',
     });
 
@@ -340,11 +340,11 @@ const ForgotPasswordModal: React.FC<{
         }
 
         try {
-            const response = await axios.post(
+            const response = await axios.patch(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/change-password`,
                 {
                     oldPassword: forgotPasswordformData.oldPassword,
-                    password: forgotPasswordformData.password,
+                    newPassword: forgotPasswordformData.newPassword,
                 },
                 { withCredentials: true }
             );
@@ -428,10 +428,10 @@ const ForgotPasswordModal: React.FC<{
                                 }
                                 type="password"
                                 placeholder={'Your New Password'}
-                                value={forgotPasswordformData.password}
+                                value={forgotPasswordformData.newPassword}
                                 className="input w-full"
                                 onChange={handlePasswordChange}
-                                name="password"
+                                name="newPassword"
                             />
                             <p className="fieldset-label"></p>
                         </fieldset>
