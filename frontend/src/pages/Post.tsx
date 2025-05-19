@@ -60,17 +60,27 @@ const Post = () => {
 
         if (name === 'video' || name === 'thumbnail') {
             if (files && files.length > 0) {
-                if (name === 'thumbnail' && files[0].size > 5242880)
-                    return setError({
-                        message: 'thumbnail size must be less than 5 mb',
+                const file = files[0];
+                if (name === 'thumbnail' && file.size > MAX_THUMBNAIL_SIZE) {
+                    setError({
+                        message: `Thumbnail size must be less than ${MAX_THUMBNAIL_SIZE / (1024 * 1024)} MB`,
                     });
-                if (name === 'video' && files[0].size > 10485760)
-                    return setError({
-                        message: 'video size must be less than 10 mb',
+                    return; // Do not update formData with invalid file
+                }
+                if (name === 'video' && file.size > MAX_VIDEO_SIZE) {
+                    setError({
+                        message: `Video size must be less than ${MAX_VIDEO_SIZE / (1024 * 1024)} MB`,
                     });
+                    return; // Do not update formData with invalid file
+                }
                 setFormData((prev) => ({
                     ...prev,
                     [name]: files[0],
+                }));
+            } else {
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: null,
                 }));
             }
         } else {
@@ -119,6 +129,12 @@ const Post = () => {
             if (response.data.success) {
                 setSuccessMessage('Video uploaded successfully');
                 setError(null);
+                setFormData({
+                    video: null,
+                    title: '',
+                    description: '',
+                    thumbnail: null,
+                });
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -205,7 +221,7 @@ const Post = () => {
                         accept="image/*"
                     />
                     <span className="text-yellow-400/70">
-                        maximum file size allowed: 2mb
+                        maximum file size allowed: {MAX_THUMBNAIL_SIZE / (1024 * 1024)}mb
                     </span>
                 </fieldset>
 
@@ -221,7 +237,7 @@ const Post = () => {
                         accept="video/*"
                     />
                     <span className="text-yellow-400/70">
-                        maximum file size allowed: 10mb
+                        maximum file size allowed: {MAX_VIDEO_SIZE / (1024 * 1024)}mb
                     </span>
                 </fieldset>
 
