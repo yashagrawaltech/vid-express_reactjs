@@ -16,3 +16,17 @@ export const videoPostValidator = [
         return true;
     }),
 ];
+
+export const videoSaveValidator = [
+    body('title', 'Title does not Empty').not().isEmpty(),
+    body('description', 'Description does not Empty').not().isEmpty(),
+    body('videoUrl', 'Video URL does not Empty').isURL().not().isEmpty(),
+    body('thumbnailUrl', 'Thumbnail URL does not Empty')
+        .isURL()
+        .not()
+        .isEmpty(),
+    body('videoPublicId', 'Video Public ID does not Empty').not().isEmpty(),
+    body('thumbnailPublicId', 'Thumbnail Public ID does not Empty')
+        .not()
+        .isEmpty(),
+];

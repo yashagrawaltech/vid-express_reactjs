@@ -113,15 +113,78 @@ const Post = () => {
         }
 
         try {
+            // 1. Get both signatures in parallel
+            const [videoSignatureRes, thumbnailSignatureRes] =
+                await Promise.all([
+                    axios.post(
+                        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/get-signature`,
+                        {},
+                        { withCredentials: true }
+                    ),
+                    axios.post(
+                        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/get-signature`,
+                        {},
+                        { withCredentials: true }
+                    ),
+                ]);
+
+            const videoSig = videoSignatureRes.data.data.data;
+            const thumbSig = thumbnailSignatureRes.data.data.data;
+
+            // console.log(videoSig)
+            // console.log(thumbSig)
+
+            // 2. Prepare both form data
+            const videoForm = new FormData();
+            videoForm.append('file', formData.video as File);
+            videoForm.append('api_key', videoSig.apiKey);
+            videoForm.append('timestamp', videoSig.timestamp.toString());
+            videoForm.append('signature', videoSig.signature);
+            videoForm.append('folder', videoSig.folder);
+
+            const thumbnailForm = new FormData();
+            thumbnailForm.append('file', formData.thumbnail as File);
+            thumbnailForm.append('api_key', thumbSig.apiKey);
+            thumbnailForm.append('timestamp', thumbSig.timestamp.toString());
+            thumbnailForm.append('signature', thumbSig.signature);
+            thumbnailForm.append('folder', thumbSig.folder);
+
+            // 3. Upload both in parallel
+            const [videoRes, thumbRes] = await Promise.all([
+                axios.post(
+                    `https://api.cloudinary.com/v1_1/${videoSig.cloudName}/auto/upload`,
+                    videoForm
+                ),
+                axios.post(
+                    `https://api.cloudinary.com/v1_1/${thumbSig.cloudName}/auto/upload`,
+                    thumbnailForm
+                ),
+            ]);
+
+            // console.log(videoRes)
+            // console.log(thumbRes)
+
+            // 4. Extract uploaded URLs
+            const { secure_url: videoUrl, public_id: videoPublicId } =
+                videoRes.data;
+
+            const { secure_url: thumbnailUrl, public_id: thumbnailPublicId } =
+                thumbRes.data;
+
             // Create a new FormData instance
-            const formDataToSend = new FormData();
-            formDataToSend.append('video', formData.video as File);
-            formDataToSend.append('title', formData.title);
-            formDataToSend.append('description', formData.description);
-            formDataToSend.append('thumbnail', formData.thumbnail as File);
+            const formDataToSend = {
+                title: formData.title,
+                description: formData.description,
+                videoUrl,
+                thumbnailUrl: thumbnailUrl,
+                videoPublicId,
+                thumbnailPublicId,
+            };
+
+            // console.log(formDataToSend)
 
             const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/upload`,
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/video/save`,
                 formDataToSend,
                 { withCredentials: true }
             );
@@ -221,7 +284,8 @@ const Post = () => {
                         accept="image/*"
                     />
                     <span className="text-yellow-400/70">
-                        maximum file size allowed: {MAX_THUMBNAIL_SIZE / (1024 * 1024)}mb
+                        maximum file size allowed:{' '}
+                        {MAX_THUMBNAIL_SIZE / (1024 * 1024)}mb
                     </span>
                 </fieldset>
 
@@ -237,7 +301,8 @@ const Post = () => {
                         accept="video/*"
                     />
                     <span className="text-yellow-400/70">
-                        maximum file size allowed: {MAX_VIDEO_SIZE / (1024 * 1024)}mb
+                        maximum file size allowed:{' '}
+                        {MAX_VIDEO_SIZE / (1024 * 1024)}mb
                     </span>
                 </fieldset>
 

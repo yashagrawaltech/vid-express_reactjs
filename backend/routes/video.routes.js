@@ -6,12 +6,17 @@ import {
     deleteVideo,
     getVideos,
     searchVideosByQuery,
+    saveVideo,
+    getSignature,
 } from '../controllers/video.controller.js';
 import {
     protectedRoute,
     unProtectedRoute,
 } from '../middlewares/user.middleware.js';
-import { videoPostValidator } from '../validators/video.validator.js';
+import {
+    videoPostValidator,
+    videoSaveValidator,
+} from '../validators/video.validator.js';
 import { handleValidationErrors } from '../middlewares/commonMiddlewares.js';
 
 const router = Router();
@@ -27,6 +32,21 @@ router.post(
     videoPostValidator,
     handleValidationErrors,
     uploadVideo
+);
+
+router.post(
+    '/save',
+    protectedRoute,
+    videoSaveValidator,
+    handleValidationErrors,
+    saveVideo
+);
+
+router.post(
+    '/get-signature',
+    protectedRoute,
+    handleValidationErrors,
+    getSignature
 );
 
 router.get('/', getVideos);

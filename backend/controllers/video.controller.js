@@ -167,3 +167,55 @@ export const deleteVideo = asyncHandler(async (req, res, next) => {
         .status(statusCodes.OK)
         .json(new ApiResponse(statusCodes.OK, 'video deleted successfully'));
 });
+
+export const getSignature = asyncHandler(async (req, res, next) => {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const folder = req.body.folder || 'uploads';
+
+    const signature = cloudinary.utils.api_sign_request(
+        { timestamp, folder },
+        process.env.CLOUDINARY_API_SECRET
+    );
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, 'video saved successfully', {
+            data: {
+                timestamp,
+                signature,
+                folder,
+                apiKey: process.env.CLOUDINARY_API_KEY,
+                cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+            },
+        })
+    );
+});
+
+export const saveVideo = asyncHandler(async (req, res, next) => {
+    const {
+        title,
+        description,
+        videoUrl,
+        thumbnailUrl,
+        videoPublicId,
+        thumbnailPublicId,
+    } = req.body;
+
+    const videoObj = await Video.insertOne({
+        title,
+        description,
+        thumbnail: thumbnailUrl,
+        url: videoUrl,
+        owner: req.user._id,
+        video_public_id: videoPublicId,
+        thumbnail_public_id: thumbnailPublicId,
+    });
+
+    req.user.videos.push(videoObj._id);
+    await req.user.save();
+
+    return res.status(statusCodes.OK).json(
+        new ApiResponse(statusCodes.OK, 'video saved successfully', {
+            video: videoObj,
+        })
+    );
+});
